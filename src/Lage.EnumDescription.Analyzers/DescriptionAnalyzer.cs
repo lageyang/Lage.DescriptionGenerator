@@ -1,4 +1,4 @@
-﻿using Lage.EnumDescription.Metadata;
+﻿using Lage.EnumDescription.Core;
 using Microsoft.CodeAnalysis;
 using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
@@ -54,7 +54,7 @@ public partial class DescriptionAnalyzer : DiagnosticAnalyzer
     {
 
         //获取INamedTypeSymbol
-        var attributeSymbol = compilation.GetTypeByMetadataName(DescriptionGenerateAttributeMeta.FullName);
+        var attributeSymbol = compilation.GetTypeByMetadataName(typeof(LageDescriptionAttribute).FullName);
 
         //if (attributeSymbol == null)
         //    return false;
@@ -77,7 +77,7 @@ public partial class DescriptionAnalyzer : DiagnosticAnalyzer
                 RuleTargetClass1,
                 classSymbol.Locations.FirstOrDefault(),
                 classSymbol.Name,
-                DescriptionGenerateAttributeMeta.ClassName);
+                nameof(LageDescriptionAttribute));
             context.ReportDiagnostic(diag);
             return;
         }
