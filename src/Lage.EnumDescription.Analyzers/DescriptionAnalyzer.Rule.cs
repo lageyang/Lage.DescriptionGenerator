@@ -30,5 +30,11 @@ namespace Lage.EnumDescription.Analyzers
            isEnabledByDefault: true,
            description: "When the target is a nested type, all outer enclosing types must be marked as 'partial' to allow code generation."
        );
+
+        public static DiagnosticDescriptor RuleTargetClass1 => RuleTargetClass2;
+
+        public static DiagnosticDescriptor RuleTargetClass2 => RuleTargetClass3;
+
+        public static DiagnosticDescriptor RuleTargetClass3 => RuleTargetClass;
     }
 }

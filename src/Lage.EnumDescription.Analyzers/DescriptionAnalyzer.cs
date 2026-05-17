@@ -13,7 +13,7 @@ namespace Lage.EnumDescription.Analyzers
     {
         public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics =>
             ImmutableArray.Create(
-                RuleTargetClass,
+                RuleTargetClass1,
                 RuleParentClass);
 
         public override void Initialize(AnalysisContext context)
@@ -74,7 +74,7 @@ namespace Lage.EnumDescription.Analyzers
             if (!IsPartial(classSymbol))
             {
                 var diag = Diagnostic.Create(
-                    RuleTargetClass,
+                    RuleTargetClass1,
                     classSymbol.Locations.FirstOrDefault(),
                     classSymbol.Name,
                     DescriptionGenerateAttributeMeta.ClassName);
