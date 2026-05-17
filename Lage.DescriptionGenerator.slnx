@@ -6,5 +6,4 @@
     <Project Path="src/Lage.EnumDescription.Metadata/Lage.EnumDescription.Metadata.csproj" />
     <Project Path="src/Lage.EnumDescription.Package/Lage.EnumDescription.Package.csproj" />
   </Folder>
-  <Project Path="shared/Lage.Generators.Extensions/Lage.Generators.Extensions.csproj" />
 </Solution>
