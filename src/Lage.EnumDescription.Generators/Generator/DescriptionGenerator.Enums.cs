@@ -1,4 +1,5 @@
-﻿using Lage.EnumDescription.Generators.Models;
+﻿using Lage.EnumDescription.Generators.Extensions;
+using Lage.EnumDescription.Generators.Models;
 using Microsoft.CodeAnalysis;
 using System.Text;
 

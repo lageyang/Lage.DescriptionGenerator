@@ -1,6 +1,6 @@
 ﻿using Microsoft.CodeAnalysis;
 
-namespace Lage.Generators.Extensions;
+namespace Lage.EnumDescription.Generators.Extensions;
 
 public static class AccessibilityExtensions
 {
