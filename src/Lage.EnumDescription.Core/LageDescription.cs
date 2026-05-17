@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace Lage.Generators.Attributes.Enum;
+namespace Lage.EnumDescription.Core;
 
 /// <summary>
 /// 生成对应描述

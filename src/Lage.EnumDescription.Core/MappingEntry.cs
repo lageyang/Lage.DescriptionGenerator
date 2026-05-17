@@ -1,4 +1,3 @@
-﻿namespace Lage.EnumDescription.Attributes
-{
-    public record MappingEntry<T>(T Name, string Description);
-}
+﻿namespace Lage.EnumDescription.Core;
+
+public record MappingEntry<T>(T Name, string Description);
