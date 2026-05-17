@@ -15,7 +15,6 @@
         <PackageReference Include="Microsoft.CodeAnalysis.CSharp" Version="5.0.0" />
     </ItemGroup>
     <ItemGroup>
-        <ProjectReference Include="..\Lage.EnumDescription.Metadata\Lage.EnumDescription.Metadata.csproj" OutputItemType="Analyzer"
-                          ReferenceOutputAssembly="true"/>
+      <ProjectReference Include="..\Lage.EnumDescription.Core\Lage.EnumDescription.Core.csproj" />
     </ItemGroup>
 </Project>

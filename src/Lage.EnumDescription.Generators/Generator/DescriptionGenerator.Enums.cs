@@ -1,4 +1,5 @@
-﻿using Lage.EnumDescription.Generators.Extensions;
+﻿using Lage.EnumDescription.Core;
+using Lage.EnumDescription.Generators.Extensions;
 using Lage.EnumDescription.Generators.Models;
 using Microsoft.CodeAnalysis;
 using System.Text;
@@ -90,23 +91,23 @@ public partial class DescriptionGenerator : IIncrementalGenerator
             Provides a complete, read-only lookup table mapping all defined enumeration values to their localized descriptions.
             </summary>
             <remarks>
-            This field contains an <see cref="ImmutableArray{T}"/> of <see cref="{{MappingName}}{T}"/> structures, 
+            This field contains an <see cref="ImmutableArray{T}"/> of <see cref="{{nameof(MappingEntry<object>)}}{T}"/> structures, 
             ensuring thread-safe access to the enumeration metadata.
             Each entry pairs a specific <see cref="{{fullName}}"/> member with its corresponding description string.
             The collection is immutable and includes every member defined in the <see cref="{{fullName}}"/> enumeration.
             </remarks>
             """);
 
-        sb.AppendLine($"{StringHelper.Indent(indent)}public static readonly ImmutableArray<{MappingName}<{fullName}>> Source = ImmutableArray.Create(");
+        sb.AppendLine($"{StringHelper.Indent(indent)}public static readonly ImmutableArray<{nameof(MappingEntry<object>)}<{fullName}>> Source = ImmutableArray.Create(");
         indent++;
         for (int i = 0; i < enumInfo.MemberInfos.Length; i++)
         {
             var member = enumInfo.MemberInfos[i];
 
             if (enumInfo.MemberInfos.Length - 1 == i)
-                sb.AppendLine($"{StringHelper.Indent(indent)}new {MappingName}<{fullName}>({fullName}.{member.Name},\"{member.Description}\")");
+                sb.AppendLine($"{StringHelper.Indent(indent)}new {nameof(MappingEntry<object>)}<{fullName}>({fullName}.{member.Name},\"{member.Description}\")");
             else
-                sb.AppendLine($"{StringHelper.Indent(indent)}new {MappingName}<{fullName}>({fullName}.{member.Name},\"{member.Description}\"),");
+                sb.AppendLine($"{StringHelper.Indent(indent)}new {nameof(MappingEntry<object>)}<{fullName}>({fullName}.{member.Name},\"{member.Description}\"),");
         }
         sb.AppendLine($"{StringHelper.Indent(--indent)});");
     }

@@ -1,4 +1,5 @@
-﻿using Lage.EnumDescription.Generators.Extensions;
+﻿using Lage.EnumDescription.Core;
+using Lage.EnumDescription.Generators.Extensions;
 using Lage.EnumDescription.Generators.Models;
 using Microsoft.CodeAnalysis;
 using System.Text;
@@ -44,7 +45,7 @@ public partial class DescriptionGenerator : IIncrementalGenerator
     where each instance encapsulates a member name and its associated localized description.
     </value>
     """);
-        sb.AppendLine($"{StringHelper.Indent(indent)}public static readonly ImmutableArray<{MappingName}<string>> Source = ImmutableArray.Create(");
+        sb.AppendLine($"{StringHelper.Indent(indent)}public static readonly ImmutableArray<{nameof(MappingEntry<object>)}<string>> Source = ImmutableArray.Create(");
 
         indent++;
         for (int i = 0; i < classInfo.MemberInfos.Length; i++)
@@ -54,7 +55,7 @@ public partial class DescriptionGenerator : IIncrementalGenerator
             if (classInfo.MemberInfos.Length - 1 == i)
                 sb.AppendLine($"{StringHelper.Indent(indent)}new({member.Name},\"{member.Description}\")");
             else
-                sb.AppendLine($"{StringHelper.Indent(indent)}new {MappingName}<string>({member.Name},\"{member.Description}\"),");
+                sb.AppendLine($"{StringHelper.Indent(indent)}new {nameof(MappingEntry<object>)}< string>({member.Name},\"{member.Description}\"),");
 
         }
         sb.AppendLine($"{StringHelper.Indent(--indent)});");
