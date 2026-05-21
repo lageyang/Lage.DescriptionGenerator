@@ -22,8 +22,8 @@ public partial class DescriptionGenerator : IIncrementalGenerator
             enum values, localized descriptions, and string names, along with a read-only lookup table.
             </remarks>
             """);
-        sb.AppendLine($"{StringHelper.Indent(indent)}{enumInfo.Accessibility.ToName()} static class {enumInfo.TypeName}Extensions");
-        sb.AppendLine($"{StringHelper.Indent(indent)}{{");
+        sb.AppendLine($"{string.Indent(indent)}{enumInfo.Accessibility.ToName()} static class {enumInfo.TypeName}Extensions");
+        sb.AppendLine($"{string.Indent(indent)}{{");
         indent++;
 
         sb.AppendLine();
@@ -46,7 +46,7 @@ public partial class DescriptionGenerator : IIncrementalGenerator
 
         sb.AppendLine();
         indent--;
-        sb.AppendLine($"{StringHelper.Indent(indent)}}}");
+        sb.AppendLine($"{string.Indent(indent)}}}");
     }
 
     private static void AppendToDescription(StringBuilder sb, int indent, TargetEnumInfo enumInfo, string enumFullName)
@@ -72,16 +72,16 @@ public partial class DescriptionGenerator : IIncrementalGenerator
             or returning a numeric string.
             </remarks>
             """);
-        sb.AppendLine($"{StringHelper.Indent(indent)}public static string ToDescription(this {enumFullName} value,string? defaultValue = null) => value switch");
-        sb.AppendLine($"{StringHelper.Indent(indent)}{{");
+        sb.AppendLine($"{string.Indent(indent)}public static string ToDescription(this {enumFullName} value,string? defaultValue = null) => value switch");
+        sb.AppendLine($"{string.Indent(indent)}{{");
         indent++;
         foreach (var item in enumInfo.MemberInfos)
         {
-            sb.AppendLine($"{StringHelper.Indent(indent)}{enumFullName}.{item.Name} => \"{item.Description}\",");
+            sb.AppendLine($"{string.Indent(indent)}{enumFullName}.{item.Name} => \"{item.Description}\",");
         }
-        sb.AppendLine($"{StringHelper.Indent(indent)}_ => defaultValue");
+        sb.AppendLine($"{string.Indent(indent)}_ => defaultValue");
         indent--;
-        sb.AppendLine($"{StringHelper.Indent(indent)}}};");
+        sb.AppendLine($"{string.Indent(indent)}}};");
     }
 
     private static void AppendSource(StringBuilder sb, int indent, TargetEnumInfo enumInfo, string fullName)
@@ -98,18 +98,18 @@ public partial class DescriptionGenerator : IIncrementalGenerator
             </remarks>
             """);
 
-        sb.AppendLine($"{StringHelper.Indent(indent)}public static readonly ImmutableArray<{nameof(MappingEntry<object>)}<{fullName}>> Source = ImmutableArray.Create(");
+        sb.AppendLine($"{string.Indent(indent)}public static readonly ImmutableArray<{nameof(MappingEntry<object>)}<{fullName}>> Source = ImmutableArray.Create(");
         indent++;
         for (int i = 0; i < enumInfo.MemberInfos.Length; i++)
         {
             var member = enumInfo.MemberInfos[i];
 
             if (enumInfo.MemberInfos.Length - 1 == i)
-                sb.AppendLine($"{StringHelper.Indent(indent)}new {nameof(MappingEntry<object>)}<{fullName}>({fullName}.{member.Name},\"{member.Description}\")");
+                sb.AppendLine($"{string.Indent(indent)}new {nameof(MappingEntry<object>)}<{fullName}>({fullName}.{member.Name},\"{member.Description}\")");
             else
-                sb.AppendLine($"{StringHelper.Indent(indent)}new {nameof(MappingEntry<object>)}<{fullName}>({fullName}.{member.Name},\"{member.Description}\"),");
+                sb.AppendLine($"{string.Indent(indent)}new {nameof(MappingEntry<object>)}<{fullName}>({fullName}.{member.Name},\"{member.Description}\"),");
         }
-        sb.AppendLine($"{StringHelper.Indent(--indent)});");
+        sb.AppendLine($"{string.Indent(--indent)});");
     }
 
     private static void AppendToName(StringBuilder sb, int indent, TargetEnumInfo enumInfo, string fullName)
@@ -135,16 +135,16 @@ public partial class DescriptionGenerator : IIncrementalGenerator
             </remarks>
             """);
 
-        sb.AppendLine($"{StringHelper.Indent(indent)}public static string ToName(this {fullName} value,string? defaultValue = null) => value switch");
-        sb.AppendLine($"{StringHelper.Indent(indent)}{{");
+        sb.AppendLine($"{string.Indent(indent)}public static string ToName(this {fullName} value,string? defaultValue = null) => value switch");
+        sb.AppendLine($"{string.Indent(indent)}{{");
         indent++;
         foreach (var item in enumInfo.MemberInfos)
         {
-            sb.AppendLine($"{StringHelper.Indent(indent)}{fullName}.{item.Name} => \"{item.Name}\",");
+            sb.AppendLine($"{string.Indent(indent)}{fullName}.{item.Name} => \"{item.Name}\",");
         }
-        sb.AppendLine($"{StringHelper.Indent(indent)}_ => defaultValue");
+        sb.AppendLine($"{string.Indent(indent)}_ => defaultValue");
         indent--;
-        sb.AppendLine($"{StringHelper.Indent(indent)}}};");
+        sb.AppendLine($"{string.Indent(indent)}}};");
     }
 
     private static void AppendParse(StringBuilder sb, int indent, TargetEnumInfo enumInfo, string fullName)
@@ -167,33 +167,33 @@ public partial class DescriptionGenerator : IIncrementalGenerator
         </remarks>
         """);
 
-        sb.AppendLine($"{StringHelper.Indent(indent)}public static {fullName} Parse(string enumStr)");
-        sb.AppendLine($"{StringHelper.Indent(indent)}{{");
+        sb.AppendLine($"{string.Indent(indent)}public static {fullName} Parse(string enumStr)");
+        sb.AppendLine($"{string.Indent(indent)}{{");
         indent++;
         // Reuse the same switch logic but assign to a local variable or return directly with a check
         // Using a local variable makes the exception logic clearer
-        sb.AppendLine($"{StringHelper.Indent(indent)}var result = enumStr switch");
-        sb.AppendLine($"{StringHelper.Indent(indent)}{{");
+        sb.AppendLine($"{string.Indent(indent)}var result = enumStr switch");
+        sb.AppendLine($"{string.Indent(indent)}{{");
         indent++;
         foreach (var item in enumInfo.MemberInfos)
         {
-            sb.AppendLine($"{StringHelper.Indent(indent)}\"{item.Name}\" => {fullName}.{item.Name},");
+            sb.AppendLine($"{string.Indent(indent)}\"{item.Name}\" => {fullName}.{item.Name},");
         }
-        sb.AppendLine($"{StringHelper.Indent(indent)}_ => ({fullName}?)null");
+        sb.AppendLine($"{string.Indent(indent)}_ => ({fullName}?)null");
         indent--;
-        sb.AppendLine($"{StringHelper.Indent(indent)}}};");
+        sb.AppendLine($"{string.Indent(indent)}}};");
 
-        sb.AppendLine($"{StringHelper.Indent(indent)}if (result is null)");
-        sb.AppendLine($"{StringHelper.Indent(indent)}{{");
+        sb.AppendLine($"{string.Indent(indent)}if (result is null)");
+        sb.AppendLine($"{string.Indent(indent)}{{");
         indent++;
         // Generate a clear error message similar to standard .NET parsing errors
-        sb.AppendLine($"{StringHelper.Indent(indent)}throw new ArgumentException($\"The value '{{enumStr}}' is not a valid member of {{typeof({fullName}).Name}}.\", nameof(enumStr));");
+        sb.AppendLine($"{string.Indent(indent)}throw new ArgumentException($\"The value '{{enumStr}}' is not a valid member of {{typeof({fullName}).Name}}.\", nameof(enumStr));");
         indent--;
-        sb.AppendLine($"{StringHelper.Indent(indent)}}}");
+        sb.AppendLine($"{string.Indent(indent)}}}");
 
-        sb.AppendLine($"{StringHelper.Indent(indent)}return result.Value;");
+        sb.AppendLine($"{string.Indent(indent)}return result.Value;");
         indent--;
-        sb.AppendLine($"{StringHelper.Indent(indent)}}}");
+        sb.AppendLine($"{string.Indent(indent)}}}");
     }
 
     private static void AppendTryParse(StringBuilder sb, int indent, TargetEnumInfo enumInfo, string fullName)
@@ -216,23 +216,23 @@ public partial class DescriptionGenerator : IIncrementalGenerator
             </remarks>
             """);
 
-        sb.AppendLine($"{StringHelper.Indent(indent)}public static bool TryParse(string enumStr, [NotNullWhen(true)] out {fullName}? target)");
-        sb.AppendLine($"{StringHelper.Indent(indent)}{{");
+        sb.AppendLine($"{string.Indent(indent)}public static bool TryParse(string enumStr, [NotNullWhen(true)] out {fullName}? target)");
+        sb.AppendLine($"{string.Indent(indent)}{{");
         indent++;
-        sb.AppendLine($"{StringHelper.Indent(indent)}target = enumStr switch");
-        sb.AppendLine($"{StringHelper.Indent(indent)}{{");
+        sb.AppendLine($"{string.Indent(indent)}target = enumStr switch");
+        sb.AppendLine($"{string.Indent(indent)}{{");
         indent++;
         foreach (var item in enumInfo.MemberInfos)
         {
-            sb.AppendLine($"{StringHelper.Indent(indent)}\"{item.Name}\" => {fullName}.{item.Name},");
+            sb.AppendLine($"{string.Indent(indent)}\"{item.Name}\" => {fullName}.{item.Name},");
         }
-        sb.AppendLine($"{StringHelper.Indent(indent)}_ => ({fullName}?)null");
+        sb.AppendLine($"{string.Indent(indent)}_ => ({fullName}?)null");
         indent--;
-        sb.AppendLine($"{StringHelper.Indent(indent)}}};");
+        sb.AppendLine($"{string.Indent(indent)}}};");
 
-        sb.AppendLine($"{StringHelper.Indent(indent)}return target is not null;");
+        sb.AppendLine($"{string.Indent(indent)}return target is not null;");
         indent--;
-        sb.AppendLine($"{StringHelper.Indent(indent)}}}");
+        sb.AppendLine($"{string.Indent(indent)}}}");
     }
 
     private static void AppendTryParseByDescription(StringBuilder sb, int indent, TargetEnumInfo enumInfo, string fullName)
@@ -256,22 +256,22 @@ public partial class DescriptionGenerator : IIncrementalGenerator
             Matching is case-sensitive and requires an exact match of the description string.
             </remarks>
             """);
-        sb.AppendLine($"{StringHelper.Indent(indent)}public static bool TryParseByDescription(string desc, [NotNullWhen(true)] out {fullName}? target)");
-        sb.AppendLine($"{StringHelper.Indent(indent)}{{");
+        sb.AppendLine($"{string.Indent(indent)}public static bool TryParseByDescription(string desc, [NotNullWhen(true)] out {fullName}? target)");
+        sb.AppendLine($"{string.Indent(indent)}{{");
         indent++;
-        sb.AppendLine($"{StringHelper.Indent(indent)}target = desc switch");
-        sb.AppendLine($"{StringHelper.Indent(indent)}{{");
+        sb.AppendLine($"{string.Indent(indent)}target = desc switch");
+        sb.AppendLine($"{string.Indent(indent)}{{");
         indent++;
         foreach (var item in enumInfo.MemberInfos)
         {
-            sb.AppendLine($"{StringHelper.Indent(indent)}\"{item.Description}\" => {fullName}.{item.Name},");
+            sb.AppendLine($"{string.Indent(indent)}\"{item.Description}\" => {fullName}.{item.Name},");
         }
-        sb.AppendLine($"{StringHelper.Indent(indent)}_ => ({fullName}?)null");
-        sb.AppendLine($"{StringHelper.Indent(indent)}}};");
+        sb.AppendLine($"{string.Indent(indent)}_ => ({fullName}?)null");
+        sb.AppendLine($"{string.Indent(indent)}}};");
         indent--;
-        sb.AppendLine($"{StringHelper.Indent(indent)}return target is not null;");
+        sb.AppendLine($"{string.Indent(indent)}return target is not null;");
         indent--;
-        sb.AppendLine($"{StringHelper.Indent(indent)}}}");
+        sb.AppendLine($"{string.Indent(indent)}}}");
     }
 }
 

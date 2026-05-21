@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Text;
 
 namespace Lage.EnumDescription.Generators.Extensions;
@@ -6,9 +7,15 @@ namespace Lage.EnumDescription.Generators.Extensions;
 public static class StringBuilderExtensions
 {
 
+    public static StringBuilder AppendIndent(this StringBuilder sb, int indent, string content)
+    {
+        sb.AppendLine($"{string.Indent(indent)}{content}");
+        return sb;
+    }
+
     public static StringBuilder AppendXmlBlock(this StringBuilder sb, int indent, string content)
     {
-        string prefix = $"{StringHelper.Indent(indent)}/// ";
+        string prefix = $"{string.Indent(indent)}/// ";
 
         using var reader = new System.IO.StringReader(content);
         string? line;
