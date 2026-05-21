@@ -36,6 +36,7 @@ internal abstract record TargetInfoBase
     public string GetFullName()
     {
         StringBuilder sb = new(32);
+        sb.Append("global::");
         foreach (var parent in ParentClass)
         {
             sb.Append($"{parent.Name}.");

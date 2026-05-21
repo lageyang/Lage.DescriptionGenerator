@@ -7,7 +7,7 @@ namespace Lage.EnumDescription.Generators.Extensions;
 public static class StringBuilderExtensions
 {
 
-    public static StringBuilder AppendIndent(this StringBuilder sb, int indent, string content)
+    public static StringBuilder IndentLine(this StringBuilder sb, int indent, string content)
     {
         sb.AppendLine($"{string.Indent(indent)}{content}");
         return sb;
@@ -24,7 +24,7 @@ public static class StringBuilderExtensions
         {
             if (line.Trim().Length == 0)
             {
-                sb.AppendLine(StringHelper.Indent(indent) + "///");
+                sb.IndentLine(indent,"///");
             }
             else
             {
@@ -41,22 +41,22 @@ public static class StringBuilderExtensions
     /// <param name="returns">returns</param>
     /// <param name="summaryText">摘要内容</param>
     /// <param name="nameAnnos">参数名和描述的键值对</param>
-    public static void AppendXmlDocLine(this StringBuilder builder, string summaryText, string? indent = null, string? returns = null, params KeyValuePair<string, string>[] nameAnnos)
+    public static void AppendXmlDocLine(this StringBuilder builder, string summaryText, int indent = 0, string? returns = null, params KeyValuePair<string, string>[] nameAnnos)
     {
-        builder.AppendLine($"{indent}/// <summary>");
-        builder.AppendLine($"{indent}/// {summaryText}");
-        builder.AppendLine($"{indent}/// </summary>"); // 修正：闭合标签
+        builder.IndentLine(indent,$"/// <summary>");
+        builder.IndentLine(indent,$"/// {summaryText}");
+        builder.IndentLine(indent,$"/// </summary>"); // 修正：闭合标签
 
         //追加参数
         if (nameAnnos != null)
         {
             foreach (var item in nameAnnos)
             {
-                builder.AppendLine($"{indent}/// <param name=\"{item.Key}\">{item.Value}</param>");
+                builder.IndentLine(indent,$"/// <param name=\"{item.Key}\">{item.Value}</param>");
             }
         }
 
         if (!string.IsNullOrEmpty(returns))
-            builder.AppendLine($"{indent}/// <returns>{returns}</returns>");
+            builder.IndentLine(indent, $"/// <returns>{returns}</returns>");
     }
 }

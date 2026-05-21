@@ -2,4 +2,8 @@
 
 namespace Lage.EnumDescription.Generators.Models;
 
-internal readonly record struct ClassInfo(string Name, Accessibility Accessibility);
+internal class ClassInfo(string name, Accessibility accessibility)
+{
+    public string Name { get; } = name;
+    public Accessibility Accessibility { get; } = accessibility;
+}
