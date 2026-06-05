@@ -13,7 +13,6 @@
 - 🛡️ **类型安全**：强类型 API，重构自动同步，不会遗漏
 - 🔄 **双向转换**：支持 `Enum → Description`、`Enum → Name`、`Description → Enum` 等多种方向
 - 📦 **开箱即用**：安装 NuGet 包后自动生效，零配置
-- 🧠 **智能分析器**：编译时自动检查 `partial` 约束，提前暴露问题
 - 🌐 **本地化友好**：代码逻辑与 UI 显示文本天然分离
 
 ## 📦 安装
@@ -96,19 +95,6 @@ dotnet run
 | `[LageDescription]` | 枚举字段 | `string description` | **必填**。该枚举值对应的显示文本 |
 
 > 两个 Attribute 均位于命名空间 `Lage.EnumDescription.Core`。
-
----
-
-## ⚙️ 编译时分析器
-
-包内置了诊断分析器，在编译时自动检查约束条件：
-
-| ID | 规则 | 严重级别 |
-|:---|:------|:--------:|
-| `Lage001` | 标记类须声明为 `partial` | Error |
-| `Lage002` | 嵌套类的所有父级也须为 `partial` | Error |
-
-违反规则的代码会直接阻止编译，避免运行时报错。
 
 ---
 
