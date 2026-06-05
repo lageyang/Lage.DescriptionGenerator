@@ -76,5 +76,8 @@ public partial class NestedContainer
 
         [LageDescription("关闭")]
         Closed,
+
+        [LageDescription("未知")]
+        Unknown,
     }
 }
