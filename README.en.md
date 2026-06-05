@@ -1,14 +1,15 @@
 # Lage.EnumDescription.Generator
 
 [![NuGet](https://img.shields.io/nuget/v/Lage.EnumDescription.Generator?label=NuGet)](https://www.nuget.org/packages/Lage.EnumDescription.Generator)
-[![License](https://img.shields.io/badge/license-MIT--0-green)](https://gitee.com/lageyang/lageyang-tools)
+[![License](https://img.shields.io/badge/license-MIT--0-green)](https://gitee.com/lageyang/lage.-description-generator/blob/master/LICENSE)
 
-A high-performance C# source generator based on Roslyn `IIncrementalGenerator` that eliminates boilerplate code for enum description mappings through compile-time code generation — **zero runtime reflection overhead**.
+**Zero-reflection, fully AOT-compatible** enum description source generator. Built on Roslyn `IIncrementalGenerator`, it generates hardcoded switch expressions and static lookup tables at compile time — no reflection, no dynamic code, no JIT compilation at runtime, with native Native AOT support out of the box.
 
 ## ✨ Features
 
-- 🚀 **Zero Reflection**: All logic is generated at compile time, with no runtime performance cost
-- 🛡️ **Type-Safe**: Strongly typed API, refactoring automatically stays in sync
+- 🚀 **Zero Reflection · AOT-Friendly**: All logic is generated at compile time — no `Enum.GetName`, no `GetCustomAttribute`, fully compatible with Native AOT
+- ⚡ **High Performance**: `ToDescription()` compiles to switch expressions with O(1) matching, orders of magnitude faster than reflection
+- 🛡️ **Type-Safe**: Strongly typed API — renaming or removing enum members produces compile-time errors
 - 🔄 **Bidirectional Conversion**: `Enum → Description`, `Enum → Name`, `Description → Enum`
 - 📦 **Zero Configuration**: Works automatically after installing the NuGet package
 
@@ -75,7 +76,8 @@ src/
 ├── Lage.EnumDescription.Generators    # Roslyn IIncrementalGenerator
 └── Lage.EnumDescription.Package       # NuGet packaging project
 test/
-└── GenConsoleTest                     # Console test project
+├── GenConsoleTest                     # Console integration test
+└── Lage.EnumDescription.Generators.Tests  # Unit tests
 ```
 
 ## 🛣️ Roadmap
@@ -98,8 +100,8 @@ Enums marked with `[LageDescriptionGenerate]` automatically get a static extensi
 
 ## 🤝 Contributing
 
-Issues and PRs welcome: [https://gitee.com/lageyang/lageyang-tools](https://gitee.com/lageyang/lageyang-tools)
+Issues and PRs welcome: [https://gitee.com/lageyang/lage.-description-generator](https://gitee.com/lageyang/lage.-description-generator)
 
 ## 📄 License
 
-[MIT-0](https://gitee.com/lageyang/lageyang-tools)
+[MIT-0](https://gitee.com/lageyang/lage.-description-generator/blob/master/LICENSE)

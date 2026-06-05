@@ -1,15 +1,16 @@
 # Lage.EnumDescription.Generator
 
 [![NuGet](https://img.shields.io/nuget/v/Lage.EnumDescription.Generator?label=NuGet)](https://www.nuget.org/packages/Lage.EnumDescription.Generator)
-[![License](https://img.shields.io/badge/license-MIT--0-green)](https://gitee.com/lageyang/lageyang-tools)
+[![License](https://img.shields.io/badge/license-MIT--0-green)](https://gitee.com/lageyang/lage.-description-generator/blob/master/LICENSE)
 
-**Lage.EnumDescription.Generator** 是一个基于 Roslyn `IIncrementalGenerator` 的高性能 C# 源生成器，通过编译时代码生成消除手动编写枚举描述映射的样板代码，**完全零运行时反射开销**。
+**零反射、全 AOT 兼容**的枚举描述源码生成器。基于 Roslyn `IIncrementalGenerator`，在编译时直接将描述映射逻辑生成为硬编码的 switch 表达式和静态查找表，运行时无需任何反射、动态代码或 JIT 编译，天然支持 Native AOT 发布。
 
 ---
 
 ## ✨ 特性
 
-- 🚀 **零反射**：所有逻辑在编译时生成，运行时无性能损耗
+- 🚀 **零反射 · AOT 友好**：编译时生成全部逻辑，无 `Enum.GetName`、无 `GetCustomAttribute`，完美适配 Native AOT
+- ⚡ **高性能**：`ToDescription()` 编译为 switch 表达式，O(1) 匹配，比传统反射快数十倍
 - 🛡️ **类型安全**：强类型 API，重构自动同步，不会遗漏
 - 🔄 **双向转换**：支持 `Enum → Description`、`Enum → Name`、`Description → Enum` 等多种方向
 - 📦 **开箱即用**：安装 NuGet 包后自动生效，零配置
@@ -115,8 +116,8 @@ dotnet run
 
 ## 🤝 贡献
 
-欢迎提交 Issue 和 Pull Request：[https://gitee.com/lageyang/lageyang-tools](https://gitee.com/lageyang/lageyang-tools)
+欢迎提交 Issue 和 Pull Request：[https://gitee.com/lageyang/lage.-description-generator](https://gitee.com/lageyang/lage.-description-generator)
 
 ## 📄 许可证
 
-[MIT-0](https://gitee.com/lageyang/lageyang-tools)
+[MIT-0](https://gitee.com/lageyang/lage.-description-generator/blob/master/LICENSE)
