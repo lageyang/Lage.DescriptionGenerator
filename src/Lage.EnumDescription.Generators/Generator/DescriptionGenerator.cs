@@ -19,8 +19,8 @@ namespace Lage.EnumDescription.Generators.Generator
 
         public void Initialize(IncrementalGeneratorInitializationContext context)
         {
-            if (!Debugger.IsAttached)
-                Debugger.Launch();
+            //if (!Debugger.IsAttached)
+            //    Debugger.Launch();
             IncrementalValuesProvider<TargetEnumInfo> collectorAttrs = context.SyntaxProvider.ForAttributeWithMetadataName(
                 fullyQualifiedMetadataName: LageDescriptionGenerateAttribute.FullName,
                 predicate: Predicate,
