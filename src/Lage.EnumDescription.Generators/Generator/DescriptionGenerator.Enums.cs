@@ -161,7 +161,7 @@ namespace Lage.EnumDescription.Generators.Generator
             sb.IndentLine(indent, $"}}");
         }
 
-        private static void AppendTryParse(StringBuilder sb, int indent, TargetEnumInfo enumInfo, string fullName)
+        private static void AppendTryParseByName(StringBuilder sb, int indent, TargetEnumInfo enumInfo, string fullName)
         {
             //sb.AppendXmlBlock(indent, $$"""
             //<summary>
@@ -181,7 +181,7 @@ namespace Lage.EnumDescription.Generators.Generator
             //</remarks>
             //""");
 
-            sb.IndentLine(indent, $"public static bool TryParse(string enumStr, {TypesConst.NotNullWhenTrue} out {fullName}? target)");
+            sb.IndentLine(indent, $"public static bool TryParseByName(string enumStr, {TypesConst.NotNullWhenTrue} out {fullName}? target)");
             sb.IndentLine(indent, $"{{");
             indent++;
             sb.IndentLine(indent, $"target = enumStr switch");

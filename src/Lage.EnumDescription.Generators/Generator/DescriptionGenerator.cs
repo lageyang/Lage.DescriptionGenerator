@@ -196,7 +196,7 @@ namespace Lage.EnumDescription.Generators.Generator
             AppendToName(sb, indent, item, enumFullName);
 
             sb.AppendLine();
-            AppendTryParse(sb, indent, item, enumFullName);
+            AppendTryParseByName(sb, indent, item, enumFullName);
 
             sb.AppendLine();
             AppendParse(sb, indent, item, enumFullName);
