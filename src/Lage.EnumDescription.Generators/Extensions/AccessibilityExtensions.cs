@@ -1,17 +1,22 @@
 ﻿using Microsoft.CodeAnalysis;
 
-namespace Lage.EnumDescription.Generators.Extensions;
-
-public static class AccessibilityExtensions
+namespace Lage.EnumDescription.Generators.Extensions
 {
-    public static string ToName(this Accessibility value) => value switch
+    public static class AccessibilityExtensions
     {
-        Accessibility.Public => "public",
-        Accessibility.Protected => "protected",
-        Accessibility.Internal or Accessibility.Friend => "internal",
-        Accessibility.ProtectedAndInternal => "private protected",
-        Accessibility.ProtectedOrInternal => "protected internal",
-        Accessibility.Private => "private",
-        _ => "private "
-    };
+        public static string ToName(this Accessibility value)
+        {
+            switch (value)
+            {
+                case Accessibility.Public: return "public";
+                case Accessibility.Protected: return "protected";
+                case Accessibility.Internal: return "internal";
+                //case Accessibility.Friend: return "internal";
+                case Accessibility.ProtectedAndInternal: return "private protected";
+                //case Accessibility.ProtectedOrInterna: return "protected internal";
+                case Accessibility.Private: return "private";
+                default: return value.ToString();
+            }
+        }
+    }
 }

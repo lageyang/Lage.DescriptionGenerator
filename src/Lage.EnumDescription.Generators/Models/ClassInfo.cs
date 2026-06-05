@@ -1,9 +1,15 @@
 ﻿using Microsoft.CodeAnalysis;
 
-namespace Lage.EnumDescription.Generators.Models;
-
-internal class ClassInfo(string name, Accessibility accessibility)
+namespace Lage.EnumDescription.Generators.Models
 {
-    public string Name { get; } = name;
-    public Accessibility Accessibility { get; } = accessibility;
+    internal class ClassInfo
+    {
+        public ClassInfo(string name, Accessibility accessibility)
+        {
+            this.Name = name;
+            this.Accessibility = accessibility;
+        }
+        public string Name { get; }
+        public Accessibility Accessibility { get; }
+    }
 }
