@@ -152,7 +152,7 @@ namespace Lage.EnumDescription.Generators.Generator
             sb.IndentLine(indent, $"{{");
             indent++;
             // Generate a clear error message similar to standard .NET parsing errors
-            sb.IndentLine(indent, $"throw new ArgumentException($\"The value '{{enumStr}}' is not a valid member of {{typeof({fullName}).Name}}.\", nameof(enumStr));");
+            sb.IndentLine(indent, $"throw new {TypesConst.ArgumentException}($\"The value '{{enumStr}}' is not a valid member of {{typeof({fullName}).Name}}.\", nameof(enumStr));");
             indent--;
             sb.IndentLine(indent, $"}}");
 
@@ -195,7 +195,7 @@ namespace Lage.EnumDescription.Generators.Generator
             indent--;
             sb.IndentLine(indent, $"}};");
 
-            sb.IndentLine(indent, $"return target is not null;");
+            sb.IndentLine(indent, $"return target != null;");
             indent--;
             sb.IndentLine(indent, $"}}");
         }
@@ -236,7 +236,7 @@ namespace Lage.EnumDescription.Generators.Generator
             sb.IndentLine(indent, $"_ => ({fullName}?)null");
             sb.IndentLine(indent, $"}};");
             indent--;
-            sb.IndentLine(indent, $"return target is not null;");
+            sb.IndentLine(indent, $"return target != null;");
             indent--;
             sb.IndentLine(indent, $"}}");
         }

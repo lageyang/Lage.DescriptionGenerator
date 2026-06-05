@@ -1,14 +1,17 @@
-﻿namespace GenConsoleTest;
+﻿using System;
 
-internal class Program
+namespace GenConsoleTest
 {
-    static void Main(string[] args)
+    internal class Program
     {
-        Console.WriteLine(UserType.Normal.ToDescription());
-
-        foreach(var item in UserTypeExtensions.Source)
+        static void Main(string[] args)
         {
-            Console.WriteLine($"Value: {item.Value}, Name: {item.Name}, Description: {item.Description}");
-        };
+            Console.WriteLine(UserType.Normal.ToDescription());
+
+            foreach(var item in UserTypeExtensions.Source)
+            {
+                Console.WriteLine($"Value: {item.Value}, Name: {item.Name}, Description: {item.Description}");
+            };
+        }
     }
 }

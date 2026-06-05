@@ -30,6 +30,7 @@ namespace Lage.EnumDescription.Generators.Generator
             context.RegisterSourceOutput(collectorAttrs, RegisterSourceOutput);
         }
 
+        #region 数据准备
         /// <summary>
         /// 数据筛选
         /// </summary>
@@ -66,8 +67,8 @@ namespace Lage.EnumDescription.Generators.Generator
         private static TargetEnumInfo TransForm(GeneratorAttributeSyntaxContext context, CancellationToken ct)
         {
             ISymbol symbol;
-            
-            switch(context.TargetNode)
+
+            switch (context.TargetNode)
             {
                 //case ClassDeclarationSyntax cds:
                 //    symbol = context.SemanticModel.GetDeclaredSymbol(cds, ct);
@@ -155,7 +156,7 @@ namespace Lage.EnumDescription.Generators.Generator
             parentClasses.Reverse();
             return parentClasses.ToImmutableArray();
         }
-
+        #endregion
 
         internal static void RegisterSourceOutput(SourceProductionContext spc, TargetEnumInfo item)
         {
@@ -168,9 +169,10 @@ namespace Lage.EnumDescription.Generators.Generator
             sb.AppendLine("#pragma warning disable");
             sb.AppendLine("#nullable enable");
             sb.AppendLine();
-            sb.AppendLine($"namespace {item.Namespace};");
+            sb.AppendLine($"namespace {item.Namespace}");
+            sb.AppendLine("{");
             sb.AppendLine();
-            int indent = 0;
+            int indent = 1;
             string enumFullName = item.GetFullName();
             //sb.AppendXmlBlock(indent, $$"""
             //<summary>
@@ -181,8 +183,10 @@ namespace Lage.EnumDescription.Generators.Generator
             //enum values, localized descriptions, and string names, along with a read-only lookup table.
             //</remarks>
             //""");
-            sb.IndentLine(indent,$"{item.Accessibility.ToName()} static class {item.TypeName}Extensions");
-            sb.IndentLine(indent,$"{{");
+            sb.IndentLine(indent, $"{item.Accessibility.ToName()} static class {item.TypeName}Extensions");
+            sb.IndentLine(indent, $"{{");
+
+
             indent++;
             AppendToDescription(sb, indent, item);
 
@@ -201,8 +205,9 @@ namespace Lage.EnumDescription.Generators.Generator
 
             sb.AppendLine();
             indent--;
-            sb.IndentLine(indent,$"}}");
-
+            sb.IndentLine(indent, $"}}");
+            indent--;
+            sb.IndentLine(indent, "}");
             spc.AddSource($"{item.TypeName}.Description.g.cs", sb.ToString());
 
 

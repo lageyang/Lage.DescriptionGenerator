@@ -6,7 +6,7 @@
         <ImplicitUsings>disable</ImplicitUsings>
         <IncludeBuildOutput>false</IncludeBuildOutput>
         <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
-        <Version>7.0.0-beta.1</Version>
+        <Version>1.0.0</Version>
         <IsRoslynComponent>true</IsRoslynComponent>
 
         <PackageId>Lage.EnumDescription.Generator</PackageId>
@@ -36,6 +36,6 @@
         <None Include="$(OutputPath)Lage.EnumDescription.Generators.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
         <None Include="$(OutputPath)Lage.EnumDescription.Analyzers.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
         <None Include="$(OutputPath)Lage.EnumDescription.Core.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-        <None Include="$(OutputPath)Lage.EnumDescription.Core.dll" Pack="true" PackagePath="lib/netstandard2.0" Visible="true" />
+        <None Include="$(OutputPath)Lage.EnumDescription.Core.dll" Pack="true" PackagePath="lib/netstandard2.1" Visible="true" />
     </ItemGroup>
 </Project>

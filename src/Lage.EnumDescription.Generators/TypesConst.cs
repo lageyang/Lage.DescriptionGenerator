@@ -14,6 +14,8 @@ namespace Lage.EnumDescription.Generators
 
         public const string StringBuilder = "global::System.Text.StringBuilder";
 
+        public const string ArgumentException = "global::System.ArgumentException";
+
         //public const string ImmutableArray = "global::System.Collections.Immutable.ImmutableArray";
 
         public const string EnumDescriptionAttribute = "global::Lage.EnumDescription.EnumDescriptionAttribute";
