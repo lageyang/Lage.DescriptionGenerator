@@ -1,0 +1,41 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+		<TargetFramework>netstandard2.0</TargetFramework>
+        <IsPackable>true</IsPackable>
+        <ImplicitUsings>disable</ImplicitUsings>
+        <IncludeBuildOutput>false</IncludeBuildOutput>
+        <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+        <Version>1.0.0</Version>
+        <IsRoslynComponent>true</IsRoslynComponent>
+
+        <PackageId>Lage.EnumDescription.Generator</PackageId>
+        <Description>是一个高性能的源生成器（Source Generator），旨在消除手动编写枚举描述映射的样板代码。它通过编译时自动生成扩展方法和数据源，提供类型安全的枚举描述获取、解析及常量类管理功能，完全零运行时反射开销。</Description>
+        <Title>Enum Description Source Generator</Title>
+        <Authors>Lageyang</Authors>
+        <Owners>Lageyang</Owners>
+        <Copyright>Copyright © 2026 lage. No rights reserved.</Copyright>
+        <PackageProjectUrl>https://gitee.com/lageyang/lageyang-tools</PackageProjectUrl>
+        <RepositoryUrl>https://gitee.com/lageyang/lageyang-tools</RepositoryUrl>
+        <PackageLicenseExpression>MIT-0</PackageLicenseExpression>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
+    </PropertyGroup>
+    
+    <ItemGroup>
+        <None Include="build\**" Pack="true" PackagePath="build" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="README.md" Pack="true" PackagePath="\" />
+        <ProjectReference Include="..\Lage.EnumDescription.Analyzers\Lage.EnumDescription.Analyzers.csproj" PrivateAssets="all" />
+        <ProjectReference Include="..\Lage.EnumDescription.Core\Lage.EnumDescription.Core.csproj" PrivateAssets="all" />
+        <ProjectReference Include="..\Lage.EnumDescription.Generators\Lage.EnumDescription.Generators.csproj" PrivateAssets="all" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <None Include="$(OutputPath)Lage.EnumDescription.Generators.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+        <None Include="$(OutputPath)Lage.EnumDescription.Analyzers.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+        <None Include="$(OutputPath)Lage.EnumDescription.Core.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
+        <None Include="$(OutputPath)Lage.EnumDescription.Core.dll" Pack="true" PackagePath="lib/netstandard2.1" Visible="true" />
+    </ItemGroup>
+</Project>
