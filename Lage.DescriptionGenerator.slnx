@@ -1,6 +1,5 @@
 <Solution>
   <Folder Name="/src/">
-    <Project Path="src/Lage.EnumDescription.Analyzers/Lage.EnumDescription.Analyzers.csproj" />
     <Project Path="src/Lage.EnumDescription.Core/Lage.EnumDescription.Core.csproj" />
     <Project Path="src/Lage.EnumDescription.Generators/Lage.EnumDescription.Generators.csproj" />
     <Project Path="src/Lage.EnumDescription.Package/Lage.EnumDescription.Package.csproj" />

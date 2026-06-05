@@ -27,14 +27,12 @@
 
     <ItemGroup>
         <None Include="README.md" Pack="true" PackagePath="\" />
-        <ProjectReference Include="..\Lage.EnumDescription.Analyzers\Lage.EnumDescription.Analyzers.csproj" PrivateAssets="all" />
         <ProjectReference Include="..\Lage.EnumDescription.Core\Lage.EnumDescription.Core.csproj" PrivateAssets="all" />
         <ProjectReference Include="..\Lage.EnumDescription.Generators\Lage.EnumDescription.Generators.csproj" PrivateAssets="all" />
     </ItemGroup>
 
     <ItemGroup>
         <None Include="$(OutputPath)Lage.EnumDescription.Generators.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
-        <None Include="$(OutputPath)Lage.EnumDescription.Analyzers.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
         <None Include="$(OutputPath)Lage.EnumDescription.Core.dll" Pack="true" PackagePath="analyzers/dotnet/cs" Visible="false" />
         <None Include="$(OutputPath)Lage.EnumDescription.Core.dll" Pack="true" PackagePath="lib/netstandard2.1" Visible="true" />
     </ItemGroup>
