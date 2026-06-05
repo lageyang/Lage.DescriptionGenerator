@@ -1,0 +1,13 @@
+<Project>
+    <Target Name="_LageEnumDescription_FrameworkCheck" BeforeTargets="BeforeBuild;CoreCompile">
+        <PropertyGroup>
+            <_Lage_Supported>false</_Lage_Supported>
+            <_Lage_Supported Condition="$(TargetFramework.StartsWith('netcoreapp3')) OR $(TargetFramework.StartsWith('net5')) OR $(TargetFramework.StartsWith('net6')) OR $(TargetFramework.StartsWith('net7')) OR $(TargetFramework.StartsWith('net8')) OR $(TargetFramework.StartsWith('net9')) OR $(TargetFramework.StartsWith('net10')) OR $(TargetFramework.StartsWith('net11'))">true</_Lage_Supported>
+        </PropertyGroup>
+
+        <Error
+          Condition="'$(_Lage_Supported)' != 'true'"
+          Code="LAGE_PKG_001"
+          Text="错误：Lage.EnumDescription.Package 不支持当前的目标框架 '$(TargetFramework)'。请将项目升级到 .NET Core 3.0 或更高版本（如 .NET Core 3.1、.NET 5+）。" />
+    </Target>
+</Project>
