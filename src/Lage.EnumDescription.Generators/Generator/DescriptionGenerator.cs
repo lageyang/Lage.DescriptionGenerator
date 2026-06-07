@@ -174,15 +174,13 @@ namespace Lage.EnumDescription.Generators.Generator
             sb.AppendLine();
             int indent = 1;
             string enumFullName = item.GetFullName();
-            //sb.AppendXmlBlock(indent, $$"""
-            //<summary>
-            //Provides high-performance extension methods and metadata for the <see cref="{{item.TypeName}}"/> enumeration.
-            //</summary>
-            //<remarks>
-            //Generated to avoid runtime reflection, this class offers efficient conversion between 
-            //enum values, localized descriptions, and string names, along with a read-only lookup table.
-            //</remarks>
-            //""");
+            sb.AppendXmlBlock(indent,
+                "<summary>",
+                "为<see cref=\"{{item.TypeName}}\"/>枚举提供高性能的扩展方法和元数据。",
+                "</summary>",
+                "<remarks>",
+                "为避免运行时反射而生成，此类提供枚举值、本地化描述和字符串名称之间的高效转换，以及只读查找表。",
+                "</remarks>");
             sb.IndentLine(indent, $"{item.Accessibility.ToName()} static class {item.TypeName}Extensions");
             sb.IndentLine(indent, $"{{");
 

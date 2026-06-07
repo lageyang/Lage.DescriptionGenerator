@@ -13,27 +13,25 @@ namespace Lage.EnumDescription.Generators.Generator
         private static void AppendToDescription(StringBuilder sb, int indent, TargetEnumInfo info)
         {
             sb.AppendLine();
-            //sb.AppendXmlBlock(indent, $$"""
-            //<summary>
-            //Converts the specified enumeration value to its localized description string.
-            //</summary>
-            //<param name="value">The enumeration value to convert.</param>
-            //<param name="defaultValue">
-            //The value to return if <paramref name="value"/> does not match any defined enumeration member.
-            //Defaults to <see langword="null"/>.
-            //</param>
-            //<returns>
-            //The description text associated with the enumeration member if a match is found; 
-            //otherwise, the specified <paramref name="defaultValue"/>.
-            //</returns>
-            //<remarks>
-            //This extension method provides a type-safe and efficient way to retrieve human-readable 
-            //labels for enumeration values.
-            //If the input value is undefined (e.g., an integer cast that has no corresponding member), 
-            //it safely returns the <paramref name="defaultValue"/> instead of throwing an exception 
-            //or returning a numeric string.
-            //</remarks>
-            //""");
+            sb.AppendXmlBlock(indent,
+                "<summary>",
+                "将指定的枚举值转换为其本地化描述字符串。",
+                "</summary>",
+                "<param name=\"value\">",
+                "要转换的枚举值。",
+                "</param>",
+                "<param name=\"defaultValue\">",
+                "如果<paramref name=\"value\"/>与任何已定义的枚举成员都不匹配，则返回此值。",
+                "默认为<see langword=\"null\"/>。",
+                "</param>",
+                "<returns>",
+                "如果找到匹配项，则返回与枚举成员关联的描述文本；",
+                "否则返回指定的<paramref name=\"defaultValue\"/>。",
+                "</returns>",
+                "<remarks>",
+                "此扩展方法提供了一种类型安全且高效的方式，用于检索枚举值的可读标签。",
+                "如果输入值未定义（例如，强制转换为整数但没有对应的成员），则安全地返回<paramref name=\"defaultValue\"/>，而不是抛出异常或返回数字字符串。",
+                "</remarks>");
             sb.IndentLine(indent, $"public static string ToDescription(this {info.GetFullName()} value,string? defaultValue = null) => value switch");
             sb.IndentLine(indent, $"{{");
             indent++;
@@ -49,17 +47,10 @@ namespace Lage.EnumDescription.Generators.Generator
         private static void AppendSource(StringBuilder sb, int indent, TargetEnumInfo enumInfo, string fullName)
         {
             sb.AppendLine();
-            //sb.AppendXmlBlock(indent, $$"""
-            //<summary>
-            //Provides a complete, read-only lookup table mapping all defined enumeration values to their localized descriptions.
-            //</summary>
-            //<remarks>
-            //ensuring thread-safe access to the enumeration metadata.
-            //Each entry pairs a specific <see cref="{{fullName}}"/> member with its corresponding description string.
-            //The collection is immutable and includes every member defined in the <see cref="{{fullName}}"/> enumeration.
-            //</remarks>
-            //""");
-
+            sb.AppendXmlBlock(indent,
+                "<summary>",
+                "只读数据源",
+                "</summary>");
             sb.IndentLine(indent, $"public static readonly {MappingEntry.FullNamWithGlobal}<{fullName}>[] Source = new {MappingEntry.FullNamWithGlobal}<{fullName}>[]");
             sb.IndentLine(indent, "{");
             indent++;
@@ -68,37 +59,34 @@ namespace Lage.EnumDescription.Generators.Generator
                 var member = enumInfo.MemberInfos[i];
 
                 if (enumInfo.MemberInfos.Length - 1 == i)
-                    //sb.IndentLine(indent,$"new {MappingEntry.FullNamWithGlobal}<{fullName}>({fullName}.{member.Name},\"{member.Description}\")");
                     sb.IndentLine(indent, $"{MappingEntry.CreateEnumMapping(fullName, member.Name, member.Description)}");
                 else
                     sb.IndentLine(indent, $"{MappingEntry.CreateEnumMapping(fullName, member.Name, member.Description)},");
-                //sb.IndentLine(indent, $"new {MappingEntry.FullNamWithGlobal}<{fullName}>({fullName}.{member.Name},\"{member.Description}\"),");
             }
             sb.IndentLine(--indent, "};");
         }
 
         private static void AppendToName(StringBuilder sb, int indent, TargetEnumInfo enumInfo, string fullName)
         {
-            //sb.AppendXmlBlock(indent, $$"""
-            //<summary>
-            //Converts the specified enumeration value to its corresponding member name string.
-            //</summary>
-            //<param name="value">The enumeration value to convert.</param>
-            //<param name="defaultValue">
-            //The value to return if <paramref name="value"/> does not match any defined enumeration member.
-            //Defaults to <see langword="null"/>.
-            //</param>
-            //<returns>
-            //The name of the enumeration member if a match is found; otherwise, the specified <paramref name="defaultValue"/>.
-            //</returns>
-            //<remarks>
-            //This extension method uses a C# switch expression for efficient reverse lookup.
-            //If the input value is undefined (e.g., due to casting an integer 
-            //that has no corresponding enum member), it returns the <paramref name="defaultValue"/> 
-            //instead of throwing an exception or returning the numeric string representation.
-            //Matching is based on the exact enumeration member definitions.
-            //</remarks>
-            //""");
+            sb.AppendXmlBlock(indent,
+            "<summary>",
+            "将指定的枚举值转换为其对应的成员名称字符串。",
+            "</summary>",
+            "<param name=\"value\">",
+            "要转换的枚举值。",
+            "</param>",
+            "<param name=\"defaultValue\">",
+            "如果<paramref name=\"value\"/>与任何已定义的枚举成员都不匹配，则返回此值。",
+            "默认为<see langword=\"null\"/>。",
+            "</param>",
+            "<returns>",
+            "如果找到匹配项，则返回枚举成员的名称；",
+            "否则返回指定的<paramref name=\"defaultValue\"/>。",
+            "</returns>",
+            "<remarks>",
+            "如果输入值未定义（例如，由于强制转换为整数但没有对应的枚举成员），则返回<paramref name=\"defaultValue\"/>，而不是抛出异常或返回数字字符串表示。",
+            "匹配基于精确的枚举成员定义。",
+            "</remarks>");
 
             sb.IndentLine(indent, $"public static string ToName(this {fullName} value,string? defaultValue = null) => value switch");
             sb.IndentLine(indent, $"{{");
@@ -114,23 +102,23 @@ namespace Lage.EnumDescription.Generators.Generator
 
         private static void AppendParseByName(StringBuilder sb, int indent, TargetEnumInfo enumInfo, string fullName)
         {
-            //    sb.AppendXmlBlock(indent, $$"""
-            //<summary>
-            //Parses the specified string representation into its corresponding enumeration value.
-            //</summary>
-            //<param name="enumStr">The string representation of the enumeration member name (case-sensitive).</param>
-            //<returns>
-            //The parsed enumeration value if <paramref name="enumStr"/> matches a defined member.
-            //</returns>
-            //<exception cref="ArgumentException">
-            //Thrown when <paramref name="enumStr"/> does not match any defined enumeration member name.
-            //The exception message includes the invalid input string.
-            //</exception>
-            //<remarks>
-            //this method throws an exception on failure
-            //instead of returning <see langword="false"/>.
-            //</remarks>
-            //""");
+            sb.AppendXmlBlock(indent,
+            "<summary>",
+            "将指定的字符串表示形式解析为对应的枚举值。",
+            "</summary>",
+            "<param name=\"enumStr\">",
+            "枚举成员名称的字符串表示形式（区分大小写）。",
+            "</param>",
+            "<returns>",
+            "如果<paramref name=\"enumStr\"/>与已定义的成员匹配，则返回解析后的枚举值。",
+            "</returns>",
+            "<exception cref=\"ArgumentException\">",
+            "当<paramref name=\"enumStr\"/>与任何已定义的枚举成员名称都不匹配时抛出。",
+            "异常消息包含无效的输入字符串。",
+            "</exception>",
+            "<remarks>",
+            "此方法在失败时抛出异常，而不是返回<see langword=\"false\"/>。",
+            "</remarks>");
 
             sb.IndentLine(indent, $"public static {fullName} Parse(string enumStr)");
             sb.IndentLine(indent, $"{{");
@@ -151,23 +139,21 @@ namespace Lage.EnumDescription.Generators.Generator
 
         private static void AppendTryParseByName(StringBuilder sb, int indent, TargetEnumInfo enumInfo, string fullName)
         {
-            //sb.AppendXmlBlock(indent, $$"""
-            //<summary>
-            //Attempts to parse the specified string representation into its corresponding enumeration value.
-            //</summary>
-            //<param name="enumStr">The string representation of the enumeration member name (case-sensitive).</param>
-            //<param name="target">
-            //When this method returns <see langword="true"/>, contains the parsed enumeration value; 
-            //otherwise, <see langword="null"/>.
-            //</param>
-            //<returns>
-            //<see langword="true"/> if <paramref name="enumStr"/> was converted successfully; 
-            //otherwise, <see langword="false"/>.
-            //</returns>
-            //<remarks>
-            //Matching is case-sensitive and strictly based on the defined member names.
-            //</remarks>
-            //""");
+            sb.AppendXmlBlock(indent,
+         "<summary>",
+         "尝试将指定的字符串表示形式解析为对应的枚举值。",
+         "</summary>",
+         "<param name=\"enumStr\">",
+         "枚举成员名称的字符串表示形式（区分大小写）。",
+         "</param>",
+         "<param name=\"target\">",
+         "当此方法返回<see langword=\"true\"/>时，包含解析后的枚举值；",
+         "否则为<see langword=\"null\"/>。",
+         "</param>",
+         "<returns>",
+         "如果<paramref name=\"enumStr\"/>转换成功，则为<see langword=\"true\"/>；",
+         "否则为<see langword=\"false\"/>。",
+         "</returns>");
 
             sb.IndentLine(indent, $"public static bool TryParseByName(string enumStr, {TypesConst.NotNullWhenTrue} out {fullName}? target)");
             sb.IndentLine(indent, $"{{");
@@ -192,25 +178,21 @@ namespace Lage.EnumDescription.Generators.Generator
         {
 
             sb.AppendLine();
-            //sb.AppendXmlBlock(indent, $$"""
-            //<summary>
-            //Attempts to parse the specified description string into its corresponding enumeration value.
-            //</summary>
-            //<param name="desc">The localized description text associated with the enumeration member (case-sensitive).</param>
-            //<param name="target">
-            //When this method returns <see langword="true"/>, contains the parsed enumeration value; 
-            //otherwise, <see langword="null"/>.
-            //</param>
-            //<returns>
-            //<see langword="true"/> if <paramref name="desc"/> matches a defined description successfully; 
-            //otherwise, <see langword="false"/>.
-            //</returns>
-            //<remarks>
-            //This method utilizes a C# switch expression to match against the <c>Description</c> attribute values 
-            //rather than the enumeration member names. 
-            //Matching is case-sensitive and requires an exact match of the description string.
-            //</remarks>
-            //""");
+            sb.AppendXmlBlock(indent,
+            "<summary>",
+            "尝试将指定的描述字符串解析为对应的枚举值。",
+            "</summary>",
+            "<param name=\"desc\">",
+            "与枚举成员关联的本地化描述文本（区分大小写）。",
+            "</param>",
+            "<param name=\"target\">",
+            "当此方法返回<see langword=\"true\"/>时，包含解析后的枚举值；",
+            "否则为<see langword=\"null\"/>。",
+            "</param>",
+            "<returns>",
+            "如果<paramref name=\"desc\"/>成功匹配已定义的描述，则为<see langword=\"true\"/>；",
+            "否则为<see langword=\"false\"/>。",
+            "</returns>");
             sb.IndentLine(indent, $"public static bool TryParseByDescription(string desc, {TypesConst.NotNullWhenTrue} out {fullName}? target)");
             sb.IndentLine(indent, $"{{");
             indent++;
