@@ -199,7 +199,7 @@ namespace Lage.EnumDescription.Generators.Generator
             AppendTryParseByName(sb, indent, item, enumFullName);
 
             sb.AppendLine();
-            AppendParse(sb, indent, item, enumFullName);
+            AppendParseByName(sb, indent, item, enumFullName);
 
             AppendTryParseByDescription(sb, indent, item, enumFullName);
 

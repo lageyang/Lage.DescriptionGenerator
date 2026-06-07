@@ -112,7 +112,7 @@ namespace Lage.EnumDescription.Generators.Generator
             sb.IndentLine(indent, $"}};");
         }
 
-        private static void AppendParse(StringBuilder sb, int indent, TargetEnumInfo enumInfo, string fullName)
+        private static void AppendParseByName(StringBuilder sb, int indent, TargetEnumInfo enumInfo, string fullName)
         {
             //    sb.AppendXmlBlock(indent, $$"""
             //<summary>
@@ -135,28 +135,16 @@ namespace Lage.EnumDescription.Generators.Generator
             sb.IndentLine(indent, $"public static {fullName} Parse(string enumStr)");
             sb.IndentLine(indent, $"{{");
             indent++;
-            // Reuse the same switch logic but assign to a local variable or return directly with a check
-            // Using a local variable makes the exception logic clearer
-            sb.IndentLine(indent, $"var result = enumStr switch");
+            sb.IndentLine(indent, $"return enumStr switch");
             sb.IndentLine(indent, $"{{");
             indent++;
             foreach (var item in enumInfo.MemberInfos)
             {
                 sb.IndentLine(indent, $"\"{item.Name}\" => {fullName}.{item.Name},");
             }
-            sb.IndentLine(indent, $"_ => ({fullName}?)null");
+            sb.IndentLine(indent, $"_ => throw new {TypesConst.ArgumentException}($\"The value '{{enumStr}}' is not a valid member of {{typeof({fullName}).Name}}.\", nameof(enumStr))");
             indent--;
             sb.IndentLine(indent, $"}};");
-
-            sb.IndentLine(indent, $"if (result is null)");
-            sb.IndentLine(indent, $"{{");
-            indent++;
-            // Generate a clear error message similar to standard .NET parsing errors
-            sb.IndentLine(indent, $"throw new {TypesConst.ArgumentException}($\"The value '{{enumStr}}' is not a valid member of {{typeof({fullName}).Name}}.\", nameof(enumStr));");
-            indent--;
-            sb.IndentLine(indent, $"}}");
-
-            sb.IndentLine(indent, $"return result.Value;");
             indent--;
             sb.IndentLine(indent, $"}}");
         }
