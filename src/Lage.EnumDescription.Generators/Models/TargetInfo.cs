@@ -1,4 +1,5 @@
 ﻿using Microsoft.CodeAnalysis;
+using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Text;
 
@@ -23,7 +24,6 @@ namespace Lage.EnumDescription.Generators.Models
 
         public TypeKind TypeKind { get; set; }
 
-
         /// <summary>
         /// 类名集合 类可能是嵌套类 需要额外处理
         /// </summary>
@@ -33,6 +33,8 @@ namespace Lage.EnumDescription.Generators.Models
         /// 访问修饰符枚举
         /// </summary>
         public Accessibility Accessibility { get; set; }
+
+        public List<DiagnosticDescriptorSummary> DiagnosticDescriptors { get; set; } = new List<DiagnosticDescriptorSummary>();
 
         /// <summary>
         /// 带有类名的全名

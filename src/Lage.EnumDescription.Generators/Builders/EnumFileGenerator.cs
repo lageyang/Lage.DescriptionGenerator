@@ -1,11 +1,9 @@
 ﻿using Lage.EnumDescription.Generators.CoreModels;
 using Lage.EnumDescription.Generators.Extensions;
 using Lage.EnumDescription.Generators.Models;
-using System;
-using System.Collections.Generic;
 using System.Text;
 
-namespace Lage.EnumDescription.Generators.Generator
+namespace Lage.EnumDescription.Generators.Builders
 {
     internal class EnumFileBuilder
     {

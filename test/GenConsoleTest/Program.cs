@@ -6,12 +6,12 @@ namespace GenConsoleTest
     {
         static void Main(string[] args)
         {
-            Console.WriteLine(HumanType.ToDescription(HumanType.Vip));
+            //Console.WriteLine(HumanType.ToDescription(HumanType.Vip));
 
-            foreach(var item in HumanType.GeneratedSource)
-            {
-                Console.WriteLine($"Value: {item.Value}, Name: {item.Name}, Description: {item.Description}");
-            };
+            //foreach(var item in HumanType.GeneratedSource)
+            //{
+            //    Console.WriteLine($"Value: {item.Value}, Name: {item.Name}, Description: {item.Description}");
+            //};
         }
     }
 }
