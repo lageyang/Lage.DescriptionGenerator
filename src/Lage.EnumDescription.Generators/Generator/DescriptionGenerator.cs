@@ -68,6 +68,8 @@ namespace Lage.EnumDescription.Generators.Generator
         {
             //if (!Debugger.IsAttached)
             //    Debugger.Launch();
+            if (ct.IsCancellationRequested)
+                return null;
 
             ISymbol symbol;
             switch (context.TargetNode)
@@ -148,7 +150,7 @@ namespace Lage.EnumDescription.Generators.Generator
             };
 
             // 分析这个类是否为partial类
-            if (!IsPartialType(symbol,ct))
+            if (!IsPartialType(symbol, ct))
             {
                 info.DiagnosticDescriptors.Add(new DiagnosticDescriptorSummary(DiagnosticDescriptors.ClassMustBePartial, symbol.Locations.FirstOrDefault()));
             }
@@ -157,7 +159,7 @@ namespace Lage.EnumDescription.Generators.Generator
             // 获取和分析父类 TODO
             var parentClasses = GetParentClassNames(symbol, ct);
             var notPartialParentClass = parentClasses.FirstOrDefault(c => !c.IsPartial);
-            if(notPartialParentClass != null)
+            if (notPartialParentClass != null)
             {
                 info.DiagnosticDescriptors.Add(new DiagnosticDescriptorSummary(DiagnosticDescriptors.ClassMustBePartial, symbol.Locations.FirstOrDefault()));
             }
@@ -170,6 +172,9 @@ namespace Lage.EnumDescription.Generators.Generator
         {
             //if (!Debugger.IsAttached)
             //    Debugger.Launch();
+
+            if (ct.IsCancellationRequested)
+                return null;
             var allMembers = symbol.GetMembers().OfType<IFieldSymbol>();
             List<MemberInfo> members = new List<MemberInfo>();
 
@@ -224,13 +229,18 @@ namespace Lage.EnumDescription.Generators.Generator
             //if (!Debugger.IsAttached)
             //    Debugger.Launch();
 
+            if (ct.IsCancellationRequested)
+                return ImmutableArray<ClassInfo>.Empty;
+
             var parentClasses = new List<ClassInfo>();
             var classItem = namedTypeSymbol.ContainingType;
 
             while (classItem != null)
             {
+                if (ct.IsCancellationRequested)
+                    return ImmutableArray<ClassInfo>.Empty;
                 //添加类名
-                parentClasses.Add(new ClassInfo(classItem.Name, classItem.DeclaredAccessibility, IsPartialType(namedTypeSymbol, ct)));
+                parentClasses.Add(new ClassInfo(classItem.Name, classItem.DeclaredAccessibility, IsPartialType(classItem, ct)));
 
                 //继续向上查找
                 classItem = classItem.ContainingType;
@@ -267,7 +277,7 @@ namespace Lage.EnumDescription.Generators.Generator
             {
                 foreach (var diag in item.DiagnosticDescriptors)
                 {
-                    spc.ReportDiagnostic(Diagnostic.Create(diag.DiagnosticDescriptor, diag.Location,item.TypeName));
+                    spc.ReportDiagnostic(Diagnostic.Create(diag.DiagnosticDescriptor, diag.Location, item.TypeName));
                 }
                 return;
             }

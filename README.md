@@ -3,17 +3,19 @@
 [![NuGet](https://img.shields.io/nuget/v/Lage.EnumDescription.Generator?label=NuGet)](https://www.nuget.org/packages/Lage.EnumDescription.Generator)
 [![License](https://img.shields.io/badge/license-MIT--0-green)](https://gitee.com/lageyang/lage.-description-generator/blob/master/LICENSE)
 
-**零反射、全 AOT 兼容**的枚举描述源代码生成器。基于 Roslyn `IIncrementalGenerator`，在编译时直接将描述映射逻辑生成为硬编码的 switch 表达式和静态查找表，运行时无需任何反射、动态代码或 JIT 编译，天然支持 Native AOT 发布。
+> 最后更新：2026-06-08
+
+基于 Roslyn `IIncrementalGenerator` 的**零反射、全 AOT 兼容**枚举描述源代码生成器。编译时将所有描述映射逻辑生成为硬编码 switch 表达式和静态查找表——运行时零反射、零动态代码、零 JIT，天然适配 Native AOT。
 
 ## 特性
 
-- **零反射 · AOT 友好**：编译时生成全部逻辑，无 `Enum.GetName`、无 `GetCustomAttribute`，完美适配 Native AOT
-- **高性能**：`ToDescription()` 编译为 switch 表达式，O(1) 匹配，比传统反射快数十倍
-- **类型安全**：强类型 API，重构、改名、删枚举值均产生编译错误，不会遗漏
-- **双向转换**：`Enum → Description`、`Enum → Name`、`Name → Enum`、`Description → Enum`
-- **双模式支持**：同时支持 `enum` 枚举和 `partial class` + `const string` 常量类两种模式
-- **编译器诊断**：常量类模式自动检测 `partial` 关键字缺失并报错（LAGE001）
-- **开箱即用**：安装 NuGet 包后自动生效，零配置
+- **零反射 · Native AOT 友好**：编译期生成全部逻辑，无 `Enum.GetName`、`GetCustomAttribute` 调用
+- **O(1) 性能**：`ToDescription()` 编译为 switch 表达式，比反射快数十倍
+- **强类型安全**：重构/改名/删除成员均产生编译错误，不会运行时遗漏
+- **双向转换**：`Enum ↔ Description`、`Enum ↔ Name`、`Description → Enum`
+- **双模式**：标准 `enum` 枚举 + `partial class` 常量类两种模式
+- **编译期诊断**：常量类缺少 `partial` 关键字自动报告 LAGE001 错误
+- **零配置**：安装 NuGet 包即自动生效
 
 ## 安装
 
@@ -21,13 +23,11 @@
 dotnet add package Lage.EnumDescription.Generator
 ```
 
-**框架要求**：.NET Core 3.0+ / .NET 5+
+要求：.NET Core 3.0+ / .NET 5+
 
 ## 快速开始
 
-### 枚举模式（enum）
-
-安装包后，为枚举添加 Attribute：
+### 枚举模式
 
 ```csharp
 using Lage.EnumDescription.Core;
@@ -48,33 +48,31 @@ public enum OrderStatus
 }
 ```
 
-编译后即可使用自动生成的扩展方法：
+编译后可用：
 
 ```csharp
-// 枚举 → 描述
+// Enum → 描述
 string desc = OrderStatus.Paid.ToDescription();              // "已支付"
 
-// 枚举 → 名称
+// Enum → 名称
 string name = OrderStatus.Shipped.ToName();                  // "Shipped"
 
-// 名称 → 枚举
-var status = OrderStatusExtensions.ParseByName("Completed"); // OrderStatus.Completed
+// 名称 → Enum（失败抛 ArgumentException）
+var s = OrderStatusExtensions.ParseByName("Completed");      // OrderStatus.Completed
 
-// 名称 → 枚举（安全）
-if (OrderStatusExtensions.TryParseByName("Paid", out var s))
-    Console.WriteLine(s);                                     // Paid
+// 名称 → Enum（安全）
+if (OrderStatusExtensions.TryParseByName("Paid", out var p))
+    Console.WriteLine(p);                                     // Paid
 
-// 描述 → 枚举
-if (OrderStatusExtensions.TryParseByDescription("待支付", out var p))
-    Console.WriteLine(p);                                     // Pending
+// 描述 → Enum
+if (OrderStatusExtensions.TryParseByDescription("待支付", out var pe))
+    Console.WriteLine(pe);                                    // Pending
 
-// 完整查找表
+// 完整查找表（下拉框绑定、遍历等场景）
 var all = OrderStatusExtensions.GeneratedSource;
 ```
 
-### 常量类模式（const string class）
-
-在 `partial class` 中定义 `const string` 字段：
+### 常量类模式
 
 ```csharp
 using Lage.EnumDescription.Core;
@@ -95,66 +93,45 @@ internal partial class UserRole
 }
 ```
 
-编译后可使用自动生成的方法：
+编译后可用：
 
 ```csharp
 // 名称 → 描述
 string desc = UserRole.ToDescription("Admin");               // "管理员"
 
 // 描述 → 名称
-if (UserRole.TryParseByDescription("超级管理员", out var role))
-    Console.WriteLine(role);                                  // "SuperAdmin"
+if (UserRole.TryParseByDescription("超级管理员", out var r))
+    Console.WriteLine(r);                                     // "SuperAdmin"
 
 // 完整查找表
 var all = UserRole.GeneratedSource;
 ```
 
-> **注意**：常量类必须声明为 `partial`，否则编译器会报告 **LAGE001** 错误。
+> 常量类**必须**声明为 `partial`，否则编译期报告 **LAGE001** 错误。
 
-## 项目结构
+## Attribute 说明
 
-```
-src/
-├── Lage.EnumDescription.Core          # 运行时 Attribute 定义（netstandard2.0）
-├── Lage.EnumDescription.Generators    # Roslyn IIncrementalGenerator
-│   ├── Builders/                       #   代码生成 Builder（ClassFileBuilder / EnumFileBuilder）
-│   ├── CoreModels/                     #   生成器内部模型（Attribute 名称常量）
-│   ├── Extensions/                     #   扩展方法（StringBuilder / Accessibility）
-│   ├── Generator/                      #   增量生成器入口（DescriptionGenerator）
-│   └── Models/                         #   数据模型（TargetInfo / MemberInfo / ClassInfo）
-└── Lage.EnumDescription.Package       # NuGet 打包项目
-test/
-├── GenConsoleTest                     # 控制台集成测试
-└── Lage.EnumDescription.Generators.Tests  # 单元测试（xUnit, 70 个测试）
-    ├── EnumGenTests/                   #   枚举生成测试
-    ├── ConstGenTests/                  #   常量类生成测试
-    └── CoreTests/                      #   运行时模型测试
-```
+| 特性 | 目标 | 参数 | 说明 |
+|------|------|------|------|
+| `[LageDescriptionGenerate]` | `enum` / `class` | `string? description` | 标记需要生成扩展代码，可选传入分组描述 |
+| `[LageDescription]` | 字段（enum 成员 / const 字段） | `string description` | **必填**。该值对应的显示文本 |
 
-## 路线图
-
-- [x] 标准 `enum` 枚举源代码生成
-- [x] 常量类模式（`partial class` + `const string`）
-- [x] 编译器诊断：非 partial 常量类报错（LAGE001）
+> 命名空间：`Lage.EnumDescription.Core`。两个 Attribute 均以 `[AttributeUsage]` 约束了适用范围。
 
 ## API 参考
 
-### 枚举模式 API
-
-标记 `[LageDescriptionGenerate]` 的枚举自动生成静态扩展类 `{TypeName}Extensions`：
+### 枚举模式 — `{TypeName}Extensions` 静态扩展类
 
 | 成员 | 签名 | 说明 |
 |------|------|------|
-| `ToDescription` | `string ToDescription(this T, string? = null)` | 枚举值 → 描述 |
-| `ToName` | `string ToName(this T, string? = null)` | 枚举值 → 名称 |
-| `ParseByName` | `T ParseByName(string)` | 名称 → 枚举（失败抛 ArgumentException） |
-| `TryParseByName` | `bool TryParseByName(string, out T?)` | 名称 → 枚举（安全） |
-| `TryParseByDescription` | `bool TryParseByDescription(string, out T?)` | 描述 → 枚举（安全） |
+| `ToDescription` | `string ToDescription(this T, string? = null)` | 枚举值 → 描述，未匹配返回 defaultValue |
+| `ToName` | `string ToName(this T, string? = null)` | 枚举值 → 名称，未匹配返回 defaultValue |
+| `ParseByName` | `T ParseByName(string)` | 名称 → 枚举值，失败抛 `ArgumentException` |
+| `TryParseByName` | `bool TryParseByName(string, out T?)` | 名称 → 枚举值（安全） |
+| `TryParseByDescription` | `bool TryParseByDescription(string, out T?)` | 描述 → 枚举值（安全） |
 | `GeneratedSource` | `MappingEntry<T>[]` | 完整只读查找表 |
 
-### 常量类模式 API
-
-标记 `[LageDescriptionGenerate]` 的 partial class 自动补充以下静态方法：
+### 常量类模式 — `{TypeName}` partial class 补充
 
 | 成员 | 签名 | 说明 |
 |------|------|------|
@@ -164,13 +141,38 @@ test/
 
 ## 编译诊断
 
-| ID | 严重性 | 说明 |
-|----|--------|------|
-| LAGE001 | Error | 常量类必须声明为 `partial` 才能使用 `[LageDescriptionGenerate]` |
+| ID | 严重性 | 触发条件 |
+|----|--------|----------|
+| LAGE001 | Error | 常量类未声明 `partial`，或其外层包含类未声明 `partial` |
+
+## 项目结构
+
+```
+src/
+├── Lage.EnumDescription.Core/           # 运行时类型（Attribute / MappingEntry, netstandard2.0）
+├── Lage.EnumDescription.Generators/     # Roslyn IIncrementalGenerator
+│   ├── Builders/                        #   EnumFileBuilder / ClassFileBuilder
+│   ├── CoreModels/                      #   Attribute 名称常量
+│   ├── Extensions/                      #   StringBuilder / Accessibility 扩展
+│   ├── Generator/                       #   DescriptionGenerator（入口）
+│   └── Models/                          #   TargetInfo / MemberInfo / ClassInfo
+└── Lage.EnumDescription.Package/        # NuGet 打包
+test/
+└── Lage.EnumDescription.Generators.Tests/  # xUnit（70 个测试）
+    ├── EnumGenTests/                    #   枚举生成测试
+    ├── ConstGenTests/                   #   常量类生成测试
+    └── CoreTests/                       #   运行时模型测试
+```
+
+## 路线图
+
+- [x] `enum` 枚举源代码生成
+- [x] 常量类模式（`partial class` + `const string`）
+- [x] 编译诊断 LAGE001（partial 检测）
 
 ## 贡献
 
-欢迎提 Issue 和 PR：[https://gitee.com/lageyang/lage.-description-generator](https://gitee.com/lageyang/lage.-description-generator)
+Issue & PR：[https://gitee.com/lageyang/lage.-description-generator](https://gitee.com/lageyang/lage.-description-generator)
 
 ## 许可证
 

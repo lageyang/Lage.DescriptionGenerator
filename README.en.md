@@ -3,16 +3,18 @@
 [![NuGet](https://img.shields.io/nuget/v/Lage.EnumDescription.Generator?label=NuGet)](https://www.nuget.org/packages/Lage.EnumDescription.Generator)
 [![License](https://img.shields.io/badge/license-MIT--0-green)](https://gitee.com/lageyang/lage.-description-generator/blob/master/LICENSE)
 
-**Zero-reflection, fully AOT-compatible** enum description source generator. Built on Roslyn `IIncrementalGenerator`, it generates hardcoded switch expressions and static lookup tables at compile time — no reflection, no dynamic code, no JIT compilation at runtime, with native Native AOT support out of the box.
+> Last updated: 2026-06-08
+
+A **zero-reflection, fully AOT-compatible** enum description source generator powered by Roslyn `IIncrementalGenerator`. All mapping logic is generated as hardcoded switch expressions and static lookup tables at compile time — zero reflection, zero dynamic code, zero JIT at runtime. Native AOT ready.
 
 ## Features
 
-- **Zero Reflection · AOT-Friendly**: All logic is generated at compile time — no `Enum.GetName`, no `GetCustomAttribute`, fully compatible with Native AOT
-- **High Performance**: `ToDescription()` compiles to switch expressions with O(1) matching, orders of magnitude faster than reflection
-- **Type-Safe**: Strongly typed API — renaming or removing enum members produces compile-time errors
-- **Bidirectional Conversion**: `Enum → Description`, `Enum → Name`, `Name → Enum`, `Description → Enum`
-- **Dual Mode**: Supports both `enum` and `partial class` + `const string` patterns
-- **Compiler Diagnostics**: Automatically detects missing `partial` keyword on const classes (LAGE001)
+- **Zero Reflection · Native AOT-Friendly**: All logic generated at compile time — no `Enum.GetName`, no `GetCustomAttribute`
+- **O(1) Performance**: `ToDescription()` compiles to switch expressions, orders of magnitude faster than reflection
+- **Type-Safe**: Renaming or removing members produces compile-time errors
+- **Bidirectional**: `Enum ↔ Description`, `Enum ↔ Name`, `Description → Enum`
+- **Dual Mode**: Standard `enum` + `partial class` with `const string` fields
+- **Compile-Time Diagnostics**: Missing `partial` on const classes triggers LAGE001 error
 - **Zero Configuration**: Works automatically after installing the NuGet package
 
 ## Installation
@@ -21,13 +23,11 @@
 dotnet add package Lage.EnumDescription.Generator
 ```
 
-**Requirements**: .NET Core 3.0+ / .NET 5+
+Requires: .NET Core 3.0+ / .NET 5+
 
 ## Quick Start
 
 ### Enum Pattern
-
-After installing the package, annotate your enum:
 
 ```csharp
 using Lage.EnumDescription.Core;
@@ -48,7 +48,7 @@ public enum OrderStatus
 }
 ```
 
-The generated extension methods are available after compilation:
+Available after compilation:
 
 ```csharp
 // Enum → Description
@@ -57,18 +57,18 @@ string desc = OrderStatus.Paid.ToDescription();              // "Paid"
 // Enum → Name
 string name = OrderStatus.Shipped.ToName();                  // "Shipped"
 
-// Name → Enum
-var status = OrderStatusExtensions.ParseByName("Completed"); // OrderStatus.Completed
+// Name → Enum (throws ArgumentException on failure)
+var s = OrderStatusExtensions.ParseByName("Completed");      // OrderStatus.Completed
 
 // Name → Enum (safe)
-if (OrderStatusExtensions.TryParseByName("Paid", out var s))
-    Console.WriteLine(s);                                     // Paid
+if (OrderStatusExtensions.TryParseByName("Paid", out var p))
+    Console.WriteLine(p);                                     // Paid
 
 // Description → Enum
-if (OrderStatusExtensions.TryParseByDescription("Pending", out var p))
-    Console.WriteLine(p);                                     // Pending
+if (OrderStatusExtensions.TryParseByDescription("Pending", out var pe))
+    Console.WriteLine(pe);                                    // Pending
 
-// Full lookup table
+// Full lookup table (dropdown binding, iteration, etc.)
 var all = OrderStatusExtensions.GeneratedSource;
 ```
 
@@ -90,71 +90,50 @@ internal partial class UserRole
     [LageDescription("Administrator")]
     public const string Admin = nameof(Admin);
 
-    [LageDescription("Super Administrator")]
+    [LageDescription("Super Admin")]
     public const string SuperAdmin = nameof(SuperAdmin);
 }
 ```
 
-Generated methods are available after compilation:
+Available after compilation:
 
 ```csharp
 // Name → Description
 string desc = UserRole.ToDescription("Admin");               // "Administrator"
 
 // Description → Name
-if (UserRole.TryParseByDescription("Super Administrator", out var role))
-    Console.WriteLine(role);                                  // "SuperAdmin"
+if (UserRole.TryParseByDescription("Super Admin", out var r))
+    Console.WriteLine(r);                                     // "SuperAdmin"
 
 // Full lookup table
 var all = UserRole.GeneratedSource;
 ```
 
-> **Note**: Const classes must be declared as `partial`, otherwise the compiler emits a **LAGE001** error.
+> Const classes **must** be declared as `partial`, otherwise the compiler emits a **LAGE001** error.
 
-## Project Structure
+## Attribute Reference
 
-```
-src/
-├── Lage.EnumDescription.Core          # Runtime attribute definitions (netstandard2.0)
-├── Lage.EnumDescription.Generators    # Roslyn IIncrementalGenerator
-│   ├── Builders/                       #   Code builders (ClassFileBuilder / EnumFileBuilder)
-│   ├── CoreModels/                     #   Generator internal models (attribute name constants)
-│   ├── Extensions/                     #   Extension methods (StringBuilder / Accessibility)
-│   ├── Generator/                      #   Incremental generator entry point (DescriptionGenerator)
-│   └── Models/                         #   Data models (TargetInfo / MemberInfo / ClassInfo)
-└── Lage.EnumDescription.Package       # NuGet packaging project
-test/
-├── GenConsoleTest                     # Console integration test
-└── Lage.EnumDescription.Generators.Tests  # Unit tests (xUnit, 70 tests)
-    ├── EnumGenTests/                   #   Enum generation tests
-    ├── ConstGenTests/                  #   Const class generation tests
-    └── CoreTests/                      #   Runtime model tests
-```
+| Attribute | Target | Parameter | Description |
+|-----------|--------|-----------|-------------|
+| `[LageDescriptionGenerate]` | `enum` / `class` | `string? description` | Marks the type for code generation; optional group description |
+| `[LageDescription]` | Field (enum member / const field) | `string description` | **Required**. Display text for this value |
 
-## Roadmap
-
-- [x] Standard `enum` source generation
-- [x] Const class pattern (`partial class` + `const string`)
-- [x] Compiler diagnostics: LAGE001 error for non-partial const classes
+> Namespace: `Lage.EnumDescription.Core`. Both attributes are constrained by `[AttributeUsage]`.
 
 ## API Reference
 
-### Enum Pattern API
-
-Enums marked with `[LageDescriptionGenerate]` automatically get a static extension class `{TypeName}Extensions`:
+### Enum Pattern — `{TypeName}Extensions` static class
 
 | Member | Signature | Description |
 |--------|-----------|-------------|
-| `ToDescription` | `string ToDescription(this T, string? = null)` | Enum value → description |
-| `ToName` | `string ToName(this T, string? = null)` | Enum value → name |
-| `ParseByName` | `T ParseByName(string)` | Name → enum value (throws ArgumentException on failure) |
+| `ToDescription` | `string ToDescription(this T, string? = null)` | Enum value → description, returns defaultValue on mismatch |
+| `ToName` | `string ToName(this T, string? = null)` | Enum value → name, returns defaultValue on mismatch |
+| `ParseByName` | `T ParseByName(string)` | Name → enum value, throws `ArgumentException` on failure |
 | `TryParseByName` | `bool TryParseByName(string, out T?)` | Name → enum value (safe) |
 | `TryParseByDescription` | `bool TryParseByDescription(string, out T?)` | Description → enum value (safe) |
 | `GeneratedSource` | `MappingEntry<T>[]` | Complete read-only lookup table |
 
-### Const Class Pattern API
-
-Classes marked with `[LageDescriptionGenerate]` get the following static methods added via `partial class`:
+### Const Class Pattern — `{TypeName}` partial class augmentation
 
 | Member | Signature | Description |
 |--------|-----------|-------------|
@@ -164,13 +143,38 @@ Classes marked with `[LageDescriptionGenerate]` get the following static methods
 
 ## Compiler Diagnostics
 
-| ID | Severity | Description |
-|----|----------|-------------|
-| LAGE001 | Error | Const class must be declared as `partial` to use `[LageDescriptionGenerate]` |
+| ID | Severity | Trigger |
+|----|----------|---------|
+| LAGE001 | Error | Const class is not `partial`, or its enclosing class is not `partial` |
+
+## Project Structure
+
+```
+src/
+├── Lage.EnumDescription.Core/           # Runtime types (Attribute / MappingEntry, netstandard2.0)
+├── Lage.EnumDescription.Generators/     # Roslyn IIncrementalGenerator
+│   ├── Builders/                        #   EnumFileBuilder / ClassFileBuilder
+│   ├── CoreModels/                      #   Attribute name constants
+│   ├── Extensions/                      #   StringBuilder / Accessibility extensions
+│   ├── Generator/                       #   DescriptionGenerator (entry point)
+│   └── Models/                          #   TargetInfo / MemberInfo / ClassInfo
+└── Lage.EnumDescription.Package/        # NuGet packaging
+test/
+└── Lage.EnumDescription.Generators.Tests/  # xUnit (70 tests)
+    ├── EnumGenTests/                    #   Enum generation tests
+    ├── ConstGenTests/                   #   Const class generation tests
+    └── CoreTests/                       #   Runtime model tests
+```
+
+## Roadmap
+
+- [x] `enum` source generation
+- [x] Const class pattern (`partial class` + `const string`)
+- [x] Compiler diagnostics LAGE001 (partial detection)
 
 ## Contributing
 
-Issues and PRs welcome: [https://gitee.com/lageyang/lage.-description-generator](https://gitee.com/lageyang/lage.-description-generator)
+Issues & PRs: [https://gitee.com/lageyang/lage.-description-generator](https://gitee.com/lageyang/lage.-description-generator)
 
 ## License
 
