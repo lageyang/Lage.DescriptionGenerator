@@ -21,7 +21,7 @@ namespace Lage.EnumDescription.Generators.Generator
         {
             //if (!Debugger.IsAttached)
             //    Debugger.Launch();
-            IncrementalValuesProvider<TargetEnumInfo> collectorAttrs = context.SyntaxProvider.ForAttributeWithMetadataName(
+            IncrementalValuesProvider<TargetInfo> collectorAttrs = context.SyntaxProvider.ForAttributeWithMetadataName(
                 fullyQualifiedMetadataName: LageDescriptionGenerateAttribute.FullName,
                 predicate: Predicate,
                 transform: TransForm)
@@ -64,7 +64,7 @@ namespace Lage.EnumDescription.Generators.Generator
         /// <param name="ct"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        private static TargetEnumInfo TransForm(GeneratorAttributeSyntaxContext context, CancellationToken ct)
+        private static TargetInfo TransForm(GeneratorAttributeSyntaxContext context, CancellationToken ct)
         {
             ISymbol symbol;
 
@@ -121,7 +121,7 @@ namespace Lage.EnumDescription.Generators.Generator
             if (members.Count == 0)
                 return null;
 
-            return new TargetEnumInfo()
+            return new TargetInfo()
             {
                 MemberInfos = ImmutableArray.CreateRange(members),
                 Namespace = symbol.ContainingNamespace.ToDisplayString(),
@@ -158,7 +158,7 @@ namespace Lage.EnumDescription.Generators.Generator
         }
         #endregion
 
-        internal static void RegisterSourceOutput(SourceProductionContext spc, TargetEnumInfo item)
+        internal static void RegisterSourceOutput(SourceProductionContext spc, TargetInfo item)
         {
             //生成源数据模型
             if (item is null)
@@ -173,6 +173,7 @@ namespace Lage.EnumDescription.Generators.Generator
             sb.AppendLine("{");
             sb.AppendLine();
             int indent = 1;
+
             string enumFullName = item.GetFullName();
             sb.AppendXmlBlock(indent,
                 "<summary>",
@@ -203,7 +204,7 @@ namespace Lage.EnumDescription.Generators.Generator
 
             sb.AppendLine();
             indent--;
-            sb.IndentLine(indent, $"}}");
+            sb.IndentLine(indent, "}");
             indent--;
             sb.IndentLine(indent, "}");
             spc.AddSource($"{item.TypeName}.Description.g.cs", sb.ToString());

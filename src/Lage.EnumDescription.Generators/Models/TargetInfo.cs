@@ -7,7 +7,7 @@ namespace Lage.EnumDescription.Generators.Models
     /// <summary>
     /// enum枚举信息
     /// </summary>
-    internal sealed class TargetEnumInfo
+    internal sealed class TargetInfo
     {
         /// <summary>
         /// 命名空间
@@ -20,6 +20,8 @@ namespace Lage.EnumDescription.Generators.Models
         public ImmutableArray<MemberInfo> MemberInfos { get; set; }
 
         public string TypeName { get; set; }
+
+        public TypeKind TypeKind { get; set; }
 
 
         /// <summary>

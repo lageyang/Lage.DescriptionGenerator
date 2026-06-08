@@ -10,7 +10,7 @@ namespace Lage.EnumDescription.Generators.Generator
     public partial class DescriptionGenerator : IIncrementalGenerator
     {
 
-        private static void AppendToDescription(StringBuilder sb, int indent, TargetEnumInfo info)
+        private static void AppendToDescription(StringBuilder sb, int indent, TargetInfo info)
         {
             sb.AppendLine();
             sb.AppendXmlBlock(indent,
@@ -44,7 +44,7 @@ namespace Lage.EnumDescription.Generators.Generator
             sb.IndentLine(indent, $"}};");
         }
 
-        private static void AppendSource(StringBuilder sb, int indent, TargetEnumInfo enumInfo, string fullName)
+        private static void AppendSource(StringBuilder sb, int indent, TargetInfo enumInfo, string fullName)
         {
             sb.AppendLine();
             sb.AppendXmlBlock(indent,
@@ -66,7 +66,7 @@ namespace Lage.EnumDescription.Generators.Generator
             sb.IndentLine(--indent, "};");
         }
 
-        private static void AppendToName(StringBuilder sb, int indent, TargetEnumInfo enumInfo, string fullName)
+        private static void AppendToName(StringBuilder sb, int indent, TargetInfo enumInfo, string fullName)
         {
             sb.AppendXmlBlock(indent,
             "<summary>",
@@ -100,7 +100,7 @@ namespace Lage.EnumDescription.Generators.Generator
             sb.IndentLine(indent, $"}};");
         }
 
-        private static void AppendParseByName(StringBuilder sb, int indent, TargetEnumInfo enumInfo, string fullName)
+        private static void AppendParseByName(StringBuilder sb, int indent, TargetInfo enumInfo, string fullName)
         {
             sb.AppendXmlBlock(indent,
             "<summary>",
@@ -137,7 +137,7 @@ namespace Lage.EnumDescription.Generators.Generator
             sb.IndentLine(indent, $"}}");
         }
 
-        private static void AppendTryParseByName(StringBuilder sb, int indent, TargetEnumInfo enumInfo, string fullName)
+        private static void AppendTryParseByName(StringBuilder sb, int indent, TargetInfo enumInfo, string fullName)
         {
             sb.AppendXmlBlock(indent,
          "<summary>",
@@ -174,7 +174,7 @@ namespace Lage.EnumDescription.Generators.Generator
             sb.IndentLine(indent, $"}}");
         }
 
-        private static void AppendTryParseByDescription(StringBuilder sb, int indent, TargetEnumInfo enumInfo, string fullName)
+        private static void AppendTryParseByDescription(StringBuilder sb, int indent, TargetInfo enumInfo, string fullName)
         {
 
             sb.AppendLine();
