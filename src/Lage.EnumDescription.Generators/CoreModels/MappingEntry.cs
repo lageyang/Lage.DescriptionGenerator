@@ -13,5 +13,6 @@ namespace Lage.EnumDescription.Generators.CoreModels
         public const string FullNamWithGlobal = "global::Lage.EnumDescription.Core.MappingEntry";
 
         public static string CreateEnumMapping(string type, string name, string desc) => $"{FullNamWithGlobal}<{type}>.NewStruct({type}.{name}, \"{name}\", \"{desc}\")";
+        public static string CreateStringMapping(string type, string name, string desc) => $"{FullNamWithGlobal}<string>.NewStruct(\"{name}\", \"{name}\", \"{desc}\")";
     }
 }

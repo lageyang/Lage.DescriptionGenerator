@@ -1,14 +1,14 @@
 ﻿using Lage.EnumDescription.Generators.Attributes;
-using Lage.EnumDescription.Generators.Extensions;
+using Lage.EnumDescription.Generators.Builders;
 using Lage.EnumDescription.Generators.Models;
 using Microsoft.CodeAnalysis;
+using Microsoft.CodeAnalysis.CSharp;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
 using System;
 using System.Collections.Generic;
 using System.Collections.Immutable;
 using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using System.Threading;
 
 namespace Lage.EnumDescription.Generators.Generator
@@ -21,7 +21,7 @@ namespace Lage.EnumDescription.Generators.Generator
         {
             //if (!Debugger.IsAttached)
             //    Debugger.Launch();
-            IncrementalValuesProvider<TargetEnumInfo> collectorAttrs = context.SyntaxProvider.ForAttributeWithMetadataName(
+            IncrementalValuesProvider<TargetInfo> collectorAttrs = context.SyntaxProvider.ForAttributeWithMetadataName(
                 fullyQualifiedMetadataName: LageDescriptionGenerateAttribute.FullName,
                 predicate: Predicate,
                 transform: TransForm)
@@ -64,15 +64,19 @@ namespace Lage.EnumDescription.Generators.Generator
         /// <param name="ct"></param>
         /// <returns></returns>
         /// <exception cref="NotImplementedException"></exception>
-        private static TargetEnumInfo TransForm(GeneratorAttributeSyntaxContext context, CancellationToken ct)
+        private static TargetInfo TransForm(GeneratorAttributeSyntaxContext context, CancellationToken ct)
         {
-            ISymbol symbol;
+            //if (!Debugger.IsAttached)
+            //    Debugger.Launch();
+            if (ct.IsCancellationRequested)
+                return null;
 
+            ISymbol symbol;
             switch (context.TargetNode)
             {
-                //case ClassDeclarationSyntax cds:
-                //    symbol = context.SemanticModel.GetDeclaredSymbol(cds, ct);
-                //    break;
+                case ClassDeclarationSyntax cds:
+                    symbol = context.SemanticModel.GetDeclaredSymbol(cds, ct);
+                    break;
                 case EnumDeclarationSyntax eds:
                     symbol = context.SemanticModel.GetDeclaredSymbol(eds, ct);
                     break;
@@ -87,7 +91,23 @@ namespace Lage.EnumDescription.Generators.Generator
                 return null;
             }
 
-            var allMembers = namedTypeSymbol.GetMembers().OfType<IFieldSymbol>();
+            switch (namedTypeSymbol.TypeKind)
+            {
+                case TypeKind.Class:
+                    return ExtractClassInfo(namedTypeSymbol, ct);
+                case TypeKind.Enum:
+                    return ExtractInfo(namedTypeSymbol, ct);
+                default: return null;
+            }
+            //return ExtractInfo(symbol, ct);
+
+        }
+
+        private static TargetInfo ExtractClassInfo(INamedTypeSymbol symbol, CancellationToken ct)
+        {
+            //if (!Debugger.IsAttached)
+            //    Debugger.Launch();
+            var allMembers = symbol.GetMembers().OfType<IFieldSymbol>();
             List<MemberInfo> members = new List<MemberInfo>();
 
             foreach (var member in allMembers)
@@ -99,7 +119,6 @@ namespace Lage.EnumDescription.Generators.Generator
                 if (member.IsImplicitlyDeclared)
                     continue;
 
-                //只支持枚举
                 if (member.Kind != SymbolKind.Field)
                     continue;
 
@@ -121,11 +140,80 @@ namespace Lage.EnumDescription.Generators.Generator
             if (members.Count == 0)
                 return null;
 
-            return new TargetEnumInfo()
+            TargetInfo info = new TargetInfo()
             {
                 MemberInfos = ImmutableArray.CreateRange(members),
+                TypeKind = symbol.TypeKind,
                 Namespace = symbol.ContainingNamespace.ToDisplayString(),
-                ParentClass = GetParentClassNames(namedTypeSymbol),
+                Accessibility = symbol.DeclaredAccessibility,
+                TypeName = symbol.Name,
+            };
+
+            // 分析这个类是否为partial类
+            if (!IsPartialType(symbol, ct))
+            {
+                info.DiagnosticDescriptors.Add(new DiagnosticDescriptorSummary(DiagnosticDescriptors.ClassMustBePartial, symbol.Locations.FirstOrDefault()));
+            }
+
+
+            // 获取和分析父类 TODO
+            var parentClasses = GetParentClassNames(symbol, ct);
+            var notPartialParentClass = parentClasses.FirstOrDefault(c => !c.IsPartial);
+            if (notPartialParentClass != null)
+            {
+                info.DiagnosticDescriptors.Add(new DiagnosticDescriptorSummary(DiagnosticDescriptors.ClassMustBePartial, symbol.Locations.FirstOrDefault()));
+            }
+            info.ParentClass = parentClasses;
+
+            return info;
+        }
+
+        private static TargetInfo ExtractInfo(INamedTypeSymbol symbol, CancellationToken ct)
+        {
+            //if (!Debugger.IsAttached)
+            //    Debugger.Launch();
+
+            if (ct.IsCancellationRequested)
+                return null;
+            var allMembers = symbol.GetMembers().OfType<IFieldSymbol>();
+            List<MemberInfo> members = new List<MemberInfo>();
+
+            foreach (var member in allMembers)
+            {
+                if (ct.IsCancellationRequested)
+                    return null;
+
+                //跳过编译器生成的成员
+                if (member.IsImplicitlyDeclared)
+                    continue;
+
+                if (member.Kind != SymbolKind.Field)
+                    continue;
+
+                var descAttr = member.GetAttributes()
+                    .FirstOrDefault(a => a.AttributeClass?.ToDisplayString() == LageDescriptionAttribute.FullName);
+
+                //没有Description特性就直接continue
+                if (descAttr is null || descAttr.ConstructorArguments.Length <= 0)
+                    continue;
+
+                //获取Description特性的文本值
+                var descriptionText = descAttr.ConstructorArguments[0].Value as string;
+                if (!string.IsNullOrEmpty(descriptionText))
+                {
+                    members.Add(new MemberInfo(member.Name, descriptionText));
+                }
+            }
+
+            if (members.Count == 0)
+                return null;
+
+            return new TargetInfo()
+            {
+                MemberInfos = ImmutableArray.CreateRange(members),
+                TypeKind = symbol.TypeKind,
+                Namespace = symbol.ContainingNamespace.ToDisplayString(),
+                ParentClass = GetParentClassNames(symbol, ct),
                 Accessibility = symbol.DeclaredAccessibility,
                 TypeName = symbol.Name,
             };
@@ -136,18 +224,23 @@ namespace Lage.EnumDescription.Generators.Generator
         /// </summary>
         /// <param name="namedTypeSymbol"></param>
         /// <returns></returns>
-        private static ImmutableArray<ClassInfo> GetParentClassNames(INamedTypeSymbol namedTypeSymbol)
+        private static ImmutableArray<ClassInfo> GetParentClassNames(INamedTypeSymbol namedTypeSymbol, CancellationToken ct)
         {
             //if (!Debugger.IsAttached)
             //    Debugger.Launch();
+
+            if (ct.IsCancellationRequested)
+                return ImmutableArray<ClassInfo>.Empty;
 
             var parentClasses = new List<ClassInfo>();
             var classItem = namedTypeSymbol.ContainingType;
 
             while (classItem != null)
             {
+                if (ct.IsCancellationRequested)
+                    return ImmutableArray<ClassInfo>.Empty;
                 //添加类名
-                parentClasses.Add(new ClassInfo(classItem.Name, classItem.DeclaredAccessibility));
+                parentClasses.Add(new ClassInfo(classItem.Name, classItem.DeclaredAccessibility, IsPartialType(classItem, ct)));
 
                 //继续向上查找
                 classItem = classItem.ContainingType;
@@ -156,61 +249,61 @@ namespace Lage.EnumDescription.Generators.Generator
             parentClasses.Reverse();
             return parentClasses.ToImmutableArray();
         }
+
+        private static bool IsPartialType(INamedTypeSymbol symbol, CancellationToken ct)
+        {
+            foreach (var syntaxRef in symbol.DeclaringSyntaxReferences)
+            {
+                if (syntaxRef.GetSyntax(ct) is BaseTypeDeclarationSyntax typeDeclaration)
+                {
+                    if (typeDeclaration.Modifiers.Any(SyntaxKind.PartialKeyword))
+                    {
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
         #endregion
 
-        internal static void RegisterSourceOutput(SourceProductionContext spc, TargetEnumInfo item)
+        internal static void RegisterSourceOutput(SourceProductionContext spc, TargetInfo item)
         {
             //生成源数据模型
             if (item is null)
                 return;
 
-            StringBuilder sb = new StringBuilder((item.MemberInfos.Length + 10) * 60);
-            sb.AppendLine("// <auto-generated/>");
-            sb.AppendLine("#pragma warning disable");
-            sb.AppendLine("#nullable enable");
-            sb.AppendLine();
-            sb.AppendLine($"namespace {item.Namespace}");
-            sb.AppendLine("{");
-            sb.AppendLine();
-            int indent = 1;
-            string enumFullName = item.GetFullName();
-            //sb.AppendXmlBlock(indent, $$"""
-            //<summary>
-            //Provides high-performance extension methods and metadata for the <see cref="{{item.TypeName}}"/> enumeration.
-            //</summary>
-            //<remarks>
-            //Generated to avoid runtime reflection, this class offers efficient conversion between 
-            //enum values, localized descriptions, and string names, along with a read-only lookup table.
-            //</remarks>
-            //""");
-            sb.IndentLine(indent, $"{item.Accessibility.ToName()} static class {item.TypeName}Extensions");
-            sb.IndentLine(indent, $"{{");
+            // 如果有诊断信息，就直接报告诊断信息，不生成代码
+            if (item.DiagnosticDescriptors != null && item.DiagnosticDescriptors.Count > 0)
+            {
+                foreach (var diag in item.DiagnosticDescriptors)
+                {
+                    spc.ReportDiagnostic(Diagnostic.Create(diag.DiagnosticDescriptor, diag.Location, item.TypeName));
+                }
+                return;
+            }
+
+            if (item.TypeKind is TypeKind.Class)
+            {
 
 
-            indent++;
-            AppendToDescription(sb, indent, item);
+                spc.AddSource($"{item.TypeName}.Description.g.cs", new ClassFileBuilder(item)
+                    .AppendToDescription()
+                    .AppendGeneratedSource()
+                    .AppendTryParseByDescription()
+                    .Build());
 
-            AppendSource(sb, indent, item, enumFullName);
-
-            sb.AppendLine();
-            AppendToName(sb, indent, item, enumFullName);
-
-            sb.AppendLine();
-            AppendTryParse(sb, indent, item, enumFullName);
-
-            sb.AppendLine();
-            AppendParse(sb, indent, item, enumFullName);
-
-            AppendTryParseByDescription(sb, indent, item, enumFullName);
-
-            sb.AppendLine();
-            indent--;
-            sb.IndentLine(indent, $"}}");
-            indent--;
-            sb.IndentLine(indent, "}");
-            spc.AddSource($"{item.TypeName}.Description.g.cs", sb.ToString());
-
-
+            }
+            else if (item.TypeKind is TypeKind.Enum)
+            {
+                spc.AddSource($"{item.TypeName}.Description.g.cs", new EnumFileBuilder(item)
+                    .AppendToDescription()
+                    .AppendToName()
+                    .AppendParseByName()
+                    .AppendTryParseByName()
+                    .AppendTryParseByDescription()
+                    .AppendGeneratedSource()
+                    .Build());
+            }
         }
     }
 }
