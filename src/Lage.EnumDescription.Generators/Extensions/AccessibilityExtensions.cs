@@ -13,7 +13,6 @@ namespace Lage.EnumDescription.Generators.Extensions
                 case Accessibility.Internal: return "internal";
                 //case Accessibility.Friend: return "internal";
                 case Accessibility.ProtectedAndInternal: return "private protected";
-                //case Accessibility.ProtectedOrInterna: return "protected internal";
                 case Accessibility.Private: return "private";
                 default: return value.ToString();
             }
