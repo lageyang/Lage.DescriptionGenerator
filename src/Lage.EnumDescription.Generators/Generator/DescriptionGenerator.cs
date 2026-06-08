@@ -66,6 +66,9 @@ namespace Lage.EnumDescription.Generators.Generator
         /// <exception cref="NotImplementedException"></exception>
         private static TargetInfo TransForm(GeneratorAttributeSyntaxContext context, CancellationToken ct)
         {
+            //if (!Debugger.IsAttached)
+            //    Debugger.Launch();
+
             ISymbol symbol;
             switch (context.TargetNode)
             {
@@ -98,7 +101,6 @@ namespace Lage.EnumDescription.Generators.Generator
                 if (member.IsImplicitlyDeclared)
                     continue;
 
-                //只支持枚举
                 if (member.Kind != SymbolKind.Field)
                     continue;
 
@@ -166,7 +168,14 @@ namespace Lage.EnumDescription.Generators.Generator
 
             if (item.TypeKind is TypeKind.Class)
             {
-
+                spc.AddSource($"{item.TypeName}.Description.g.cs", new ClassFileBuilder(item)
+                    .AppendToDescription()
+                    //.AppendToName()
+                    //.AppendParseByName()
+                    //.AppendTryParseByName()
+                    //.AppendTryParseByDescription()
+                    //.AppendGeneratedSource()
+                    .Build());
 
             }
             else if (item.TypeKind is TypeKind.Enum)
@@ -177,7 +186,7 @@ namespace Lage.EnumDescription.Generators.Generator
                     .AppendParseByName()
                     .AppendTryParseByName()
                     .AppendTryParseByDescription()
-                    .AppendSource()
+                    .AppendGeneratedSource()
                     .Build());
             }
             

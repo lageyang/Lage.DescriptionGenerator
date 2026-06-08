@@ -12,7 +12,7 @@ namespace Lage.EnumDescription.Generators.Generator
         private readonly StringBuilder sb;
         private readonly TargetInfo info;
         private readonly string fullName;
-        private int indent = 1;
+        private int indent = 0;
 
         public EnumFileBuilder(TargetInfo info) 
         {
@@ -37,6 +37,7 @@ namespace Lage.EnumDescription.Generators.Generator
                 "</remarks>");
             sb.IndentLine(indent, $"{info.Accessibility.ToName()} static class {info.TypeName}Extensions");
             sb.IndentLine(indent, $"{{");
+            indent++;
         }
 
         public EnumFileBuilder AppendToDescription()
@@ -74,14 +75,14 @@ namespace Lage.EnumDescription.Generators.Generator
             return this;
         }
 
-        public EnumFileBuilder AppendSource()
+        public EnumFileBuilder AppendGeneratedSource()
         {
             sb.AppendLine();
             sb.AppendXmlBlock(indent,
                 "<summary>",
                 "只读数据源",
                 "</summary>");
-            sb.IndentLine(indent, $"public static readonly {MappingEntry.FullNamWithGlobal}<{fullName}>[] Source = new {MappingEntry.FullNamWithGlobal}<{fullName}>[]");
+            sb.IndentLine(indent, $"public static readonly {MappingEntry.FullNamWithGlobal}<{fullName}>[] GeneratedSource = new {MappingEntry.FullNamWithGlobal}<{fullName}>[]");
             sb.IndentLine(indent, "{");
             indent++;
             for (int i = 0; i < info.MemberInfos.Length; i++)
@@ -93,8 +94,9 @@ namespace Lage.EnumDescription.Generators.Generator
                 else
                     sb.IndentLine(indent, $"{MappingEntry.CreateEnumMapping(fullName, member.Name, member.Description)},");
             }
-            sb.IndentLine(indent, "};");
+
             indent--;
+            sb.IndentLine(indent, "};");
             return this;
         }
 
@@ -254,6 +256,7 @@ namespace Lage.EnumDescription.Generators.Generator
 
         public string Build()
         {
+            indent--;
             sb.IndentLine(indent, "}");
             indent--;
             sb.IndentLine(indent, "}");

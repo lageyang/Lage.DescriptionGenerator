@@ -6,7 +6,7 @@ namespace GenConsoleTest
     {
         static void Main(string[] args)
         {
-            Console.WriteLine(UserType.Normal.ToDescription());
+            Console.WriteLine(HumanType.ToDescription(HumanType.Vip));
 
             foreach(var item in UserTypeExtensions.Source)
             {
