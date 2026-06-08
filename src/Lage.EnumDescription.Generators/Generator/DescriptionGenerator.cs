@@ -170,11 +170,8 @@ namespace Lage.EnumDescription.Generators.Generator
             {
                 spc.AddSource($"{item.TypeName}.Description.g.cs", new ClassFileBuilder(item)
                     .AppendToDescription()
-                    //.AppendToName()
-                    //.AppendParseByName()
-                    //.AppendTryParseByName()
-                    //.AppendTryParseByDescription()
-                    //.AppendGeneratedSource()
+                    .AppendGeneratedSource()
+                    .AppendTryParseByDescription()
                     .Build());
 
             }

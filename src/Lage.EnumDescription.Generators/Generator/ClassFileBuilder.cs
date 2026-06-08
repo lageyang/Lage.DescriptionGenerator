@@ -1,4 +1,5 @@
-﻿using Lage.EnumDescription.Generators.Extensions;
+﻿using Lage.EnumDescription.Generators.CoreModels;
+using Lage.EnumDescription.Generators.Extensions;
 using Lage.EnumDescription.Generators.Models;
 using System;
 using System.Collections.Generic;
@@ -54,18 +55,67 @@ namespace Lage.EnumDescription.Generators.Generator
             return this;
         }
 
-        public ClassFileBuilder AppendParseByDescription()
+        public ClassFileBuilder AppendGeneratedSource()
         {
-            sb.IndentLine(indent, $"public static string ToDescription(string? enumName,string? defaultValue = null) => enumName switch");
+            sb.AppendLine();
+            sb.AppendXmlBlock(indent,
+                "<summary>",
+                "只读数据源",
+                "</summary>");
+            sb.IndentLine(indent, $"public static readonly {MappingEntry.FullNamWithGlobal}<string>[] GeneratedSource = new {MappingEntry.FullNamWithGlobal}<string>[]");
+            sb.IndentLine(indent, "{");
+            indent++;
+            for (int i = 0; i < info.MemberInfos.Length; i++)
+            {
+                var member = info.MemberInfos[i];
+
+                if (info.MemberInfos.Length - 1 == i)
+                    sb.IndentLine(indent, $"{MappingEntry.CreateStringMapping(member.Name, member.Name, member.Description)}");
+                else
+                    sb.IndentLine(indent, $"{MappingEntry.CreateStringMapping(member.Name, member.Name, member.Description)},");
+            }
+
+            indent--;
+            sb.IndentLine(indent, "};");
+            return this;
+        }
+
+        public ClassFileBuilder AppendTryParseByDescription()
+        {
+
+            sb.AppendLine();
+            sb.AppendXmlBlock(indent,
+            "<summary>",
+            "尝试将指定的描述字符串解析为对应的枚举值。",
+            "</summary>",
+            "<param name=\"desc\">",
+            "与枚举成员关联的本地化描述文本（区分大小写）。",
+            "</param>",
+            "<param name=\"target\">",
+            "当此方法返回<see langword=\"true\"/>时，包含解析后的枚举值；",
+            "否则为<see langword=\"null\"/>。",
+            "</param>",
+            "<returns>",
+            "如果<paramref name=\"desc\"/>成功匹配已定义的描述，则为<see langword=\"true\"/>；",
+            "否则为<see langword=\"false\"/>。",
+            "</returns>");
+            sb.IndentLine(indent, $"public static bool TryParseByDescription(string desc, {TypesConst.NotNullWhenTrue} out string? target)");
+            sb.IndentLine(indent, $"{{");
+            indent++;
+            sb.IndentLine(indent, $"target = desc switch");
             sb.IndentLine(indent, $"{{");
             indent++;
             foreach (var item in info.MemberInfos)
             {
-                sb.IndentLine(indent, $"\"{item.Name}\" => \"{item.Description}\",");
+                sb.IndentLine(indent, $"\"{item.Description}\" => \"{item.Name}\",");
             }
-            sb.IndentLine(indent, $"_ => defaultValue");
+            sb.IndentLine(indent, $"_ => null");
+
             indent--;
             sb.IndentLine(indent, $"}};");
+            sb.IndentLine(indent, $"return target != null;");
+            indent--;
+            sb.IndentLine(indent, $"}}");
             return this;
         }
 
