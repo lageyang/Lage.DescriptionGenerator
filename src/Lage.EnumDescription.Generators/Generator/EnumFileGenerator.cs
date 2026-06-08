@@ -158,7 +158,7 @@ namespace Lage.EnumDescription.Generators.Generator
             "此方法在失败时抛出异常，而不是返回<see langword=\"false\"/>。",
             "</remarks>");
 
-            sb.IndentLine(indent, $"public static {fullName} Parse(string enumStr)");
+            sb.IndentLine(indent, $"public static {fullName} ParseByName(string enumStr)");
             sb.IndentLine(indent, $"{{");
             indent++;
             sb.IndentLine(indent, $"return enumStr switch");

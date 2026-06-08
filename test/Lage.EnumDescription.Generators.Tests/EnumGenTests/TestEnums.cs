@@ -1,6 +1,6 @@
 using Lage.EnumDescription.Core;
 
-namespace Lage.EnumDescription.Generators.Tests;
+namespace Lage.EnumDescription.Generators.Tests.EnumGenTests;
 
 /// <summary>
 /// 基本枚举 — 用于测试标准功能
