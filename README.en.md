@@ -182,7 +182,7 @@ test/
 
 ## Contributing
 
-Issues & PRs: [https://gitee.com/lageyang/lage.-description-generator](https://gitee.com/lageyang/lage.-description-generator)
+Issues & PRs: [Gitee](https://gitee.com/lageyang/lage.-description-generator) / [GitHub](https://github.com/lageyang/Lage.DescriptionGenerator)
 
 ## License
 
