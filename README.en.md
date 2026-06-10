@@ -2,8 +2,10 @@
 
 [![NuGet](https://img.shields.io/nuget/v/Lage.EnumDescription.Generator?label=NuGet)](https://www.nuget.org/packages/Lage.EnumDescription.Generator)
 [![License](https://img.shields.io/badge/license-MIT--0-green)](https://gitee.com/lageyang/lage.-description-generator/blob/master/LICENSE)
+[![Gitee](https://img.shields.io/badge/Gitee-Source-red?logo=gitee)](https://gitee.com/lageyang/lage.-description-generator.git)
+[![GitHub](https://img.shields.io/badge/GitHub-Source-black?logo=github)](https://github.com/lageyang/Lage.DescriptionGenerator.git)
 
-> Last updated: 2026-06-08
+> Last updated: 2026-06-10
 
 A **zero-reflection, fully AOT-compatible** enum description source generator powered by Roslyn `IIncrementalGenerator`. All mapping logic is generated as hardcoded switch expressions and static lookup tables at compile time — zero reflection, zero dynamic code, zero JIT at runtime. Native AOT ready.
 
@@ -14,6 +16,7 @@ A **zero-reflection, fully AOT-compatible** enum description source generator po
 - **Type-Safe**: Renaming or removing members produces compile-time errors
 - **Bidirectional**: `Enum ↔ Description`, `Enum ↔ Name`, `Description → Enum`
 - **Dual Mode**: Standard `enum` + `partial class` with `const string` fields
+- **Nested Type Support**: Enums and const classes can be nested inside outer classes — the generator handles wrapping
 - **Compile-Time Diagnostics**: Missing `partial` on const classes triggers LAGE001 error
 - **Zero Configuration**: Works automatically after installing the NuGet package
 
@@ -32,19 +35,12 @@ Requires: .NET Core 3.0+ / .NET 5+
 ```csharp
 using Lage.EnumDescription.Core;
 
-namespace MyApp.Models;
-
 [LageDescriptionGenerate]
 public enum OrderStatus
 {
-    [LageDescription("Pending")]
-    Pending,
-
-    [LageDescription("Paid")]
-    Paid,
-
-    [LageDescription("Shipped")]
-    Shipped,
+    [LageDescription("Pending")] Pending,
+    [LageDescription("Paid")]    Paid,
+    [LageDescription("Shipped")] Shipped,
 }
 ```
 
@@ -68,7 +64,7 @@ if (OrderStatusExtensions.TryParseByName("Paid", out var p))
 if (OrderStatusExtensions.TryParseByDescription("Pending", out var pe))
     Console.WriteLine(pe);                                    // Pending
 
-// Full lookup table (dropdown binding, iteration, etc.)
+// Full lookup table
 var all = OrderStatusExtensions.GeneratedSource;
 ```
 
@@ -77,21 +73,12 @@ var all = OrderStatusExtensions.GeneratedSource;
 Define `const string` fields in a `partial class`:
 
 ```csharp
-using Lage.EnumDescription.Core;
-
-namespace MyApp.Models;
-
 [LageDescriptionGenerate]
 internal partial class UserRole
 {
-    [LageDescription("Normal User")]
-    public const string Normal = nameof(Normal);
-
-    [LageDescription("Administrator")]
-    public const string Admin = nameof(Admin);
-
-    [LageDescription("Super Admin")]
-    public const string SuperAdmin = nameof(SuperAdmin);
+    [LageDescription("Normal User")]   public const string Normal = nameof(Normal);
+    [LageDescription("Administrator")] public const string Admin  = nameof(Admin);
+    [LageDescription("Super Admin")]   public const string SuperAdmin = nameof(SuperAdmin);
 }
 ```
 
@@ -109,7 +96,27 @@ if (UserRole.TryParseByDescription("Super Admin", out var r))
 var all = UserRole.GeneratedSource;
 ```
 
-> Const classes **must** be declared as `partial`, otherwise the compiler emits a **LAGE001** error.
+### Nested Types
+
+Enums and const classes can be nested inside outer classes (the outer class must be `partial`):
+
+```csharp
+// Nested enum
+public partial class NestedContainer
+{
+    [LageDescriptionGenerate]
+    public enum InnerStatus
+    {
+        [LageDescription("Open")]   Open,
+        [LageDescription("Closed")] Closed,
+    }
+}
+
+// Usage is the same
+NestedContainer.InnerStatus.Open.ToDescription();             // "Open"
+```
+
+> Const classes and their enclosing classes **must** be declared as `partial`, otherwise the compiler emits a **LAGE001** error.
 
 ## Attribute Reference
 
@@ -161,7 +168,7 @@ src/
 └── Lage.EnumDescription.Package/        # NuGet packaging
 test/
 └── Lage.EnumDescription.Generators.Tests/  # xUnit (70 tests)
-    ├── EnumGenTests/                    #   Enum generation tests
+    ├── EnumGenTests/                    #   Enum generation tests (incl. nested)
     ├── ConstGenTests/                   #   Const class generation tests
     └── CoreTests/                       #   Runtime model tests
 ```
@@ -170,6 +177,7 @@ test/
 
 - [x] `enum` source generation
 - [x] Const class pattern (`partial class` + `const string`)
+- [x] Nested type support (enum / const class inside outer classes)
 - [x] Compiler diagnostics LAGE001 (partial detection)
 
 ## Contributing

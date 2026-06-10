@@ -4,7 +4,8 @@
 [![License](https://img.shields.io/badge/license-MIT--0-green)](https://gitee.com/lageyang/lage.-description-generator/blob/master/LICENSE)
 [![Gitee](https://img.shields.io/badge/Gitee-Source-red?logo=gitee)](https://gitee.com/lageyang/lage.-description-generator.git)
 [![GitHub](https://img.shields.io/badge/GitHub-Source-black?logo=github)](https://github.com/lageyang/Lage.DescriptionGenerator.git)
-> 最后更新：2026-06-08
+
+> 最后更新：2026-06-10
 
 基于 Roslyn `IIncrementalGenerator` 的**零反射、全 AOT 兼容**枚举描述源代码生成器。编译时将所有描述映射逻辑生成为硬编码 switch 表达式和静态查找表——运行时零反射、零动态代码、零 JIT，天然适配 Native AOT。
 
@@ -15,6 +16,7 @@
 - **强类型安全**：重构/改名/删除成员均产生编译错误，不会运行时遗漏
 - **双向转换**：`Enum ↔ Description`、`Enum ↔ Name`、`Description → Enum`
 - **双模式**：标准 `enum` 枚举 + `partial class` 常量类两种模式
+- **嵌套类型支持**：枚举和常量类均可放在外层类中，生成器自动处理包裹层级
 - **编译期诊断**：常量类缺少 `partial` 关键字自动报告 LAGE001 错误
 - **零配置**：安装 NuGet 包即自动生效
 
@@ -33,19 +35,12 @@ dotnet add package Lage.EnumDescription.Generator
 ```csharp
 using Lage.EnumDescription.Core;
 
-namespace MyApp.Models;
-
 [LageDescriptionGenerate]
 public enum OrderStatus
 {
-    [LageDescription("待支付")]
-    Pending,
-
-    [LageDescription("已支付")]
-    Paid,
-
-    [LageDescription("已发货")]
-    Shipped,
+    [LageDescription("待支付")] Pending,
+    [LageDescription("已支付")] Paid,
+    [LageDescription("已发货")] Shipped,
 }
 ```
 
@@ -69,28 +64,21 @@ if (OrderStatusExtensions.TryParseByName("Paid", out var p))
 if (OrderStatusExtensions.TryParseByDescription("待支付", out var pe))
     Console.WriteLine(pe);                                    // Pending
 
-// 完整查找表（下拉框绑定、遍历等场景）
+// 完整查找表
 var all = OrderStatusExtensions.GeneratedSource;
 ```
 
 ### 常量类模式
 
+在 `partial class` 中定义 `const string` 字段：
+
 ```csharp
-using Lage.EnumDescription.Core;
-
-namespace MyApp.Models;
-
 [LageDescriptionGenerate]
 internal partial class UserRole
 {
-    [LageDescription("普通用户")]
-    public const string Normal = nameof(Normal);
-
-    [LageDescription("管理员")]
-    public const string Admin = nameof(Admin);
-
-    [LageDescription("超级管理员")]
-    public const string SuperAdmin = nameof(SuperAdmin);
+    [LageDescription("普通用户")]   public const string Normal = nameof(Normal);
+    [LageDescription("管理员")]     public const string Admin  = nameof(Admin);
+    [LageDescription("超级管理员")] public const string SuperAdmin = nameof(SuperAdmin);
 }
 ```
 
@@ -108,7 +96,27 @@ if (UserRole.TryParseByDescription("超级管理员", out var r))
 var all = UserRole.GeneratedSource;
 ```
 
-> 常量类**必须**声明为 `partial`，否则编译期报告 **LAGE001** 错误。
+### 嵌套类型
+
+枚举或常量类可以放在外层类中（外层类需声明 `partial`）：
+
+```csharp
+// 嵌套枚举
+public partial class NestedContainer
+{
+    [LageDescriptionGenerate]
+    public enum InnerStatus
+    {
+        [LageDescription("打开")] Open,
+        [LageDescription("关闭")] Closed,
+    }
+}
+
+// 使用方式不变
+NestedContainer.InnerStatus.Open.ToDescription();             // "打开"
+```
+
+> 常量类及其外层包含类**必须**声明为 `partial`，否则编译期报告 **LAGE001** 错误。
 
 ## Attribute 说明
 
@@ -160,7 +168,7 @@ src/
 └── Lage.EnumDescription.Package/        # NuGet 打包
 test/
 └── Lage.EnumDescription.Generators.Tests/  # xUnit（70 个测试）
-    ├── EnumGenTests/                    #   枚举生成测试
+    ├── EnumGenTests/                    #   枚举生成测试（含嵌套枚举）
     ├── ConstGenTests/                   #   常量类生成测试
     └── CoreTests/                       #   运行时模型测试
 ```
@@ -169,6 +177,7 @@ test/
 
 - [x] `enum` 枚举源代码生成
 - [x] 常量类模式（`partial class` + `const string`）
+- [x] 嵌套类型支持（枚举 / 常量类均可置于外层类中）
 - [x] 编译诊断 LAGE001（partial 检测）
 
 ## 贡献
