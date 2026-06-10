@@ -25,6 +25,14 @@ namespace Lage.EnumDescription.Generators.Builders
             sb.AppendLine($"namespace {info.Namespace}");
             sb.AppendLine("{");
             sb.AppendLine();
+
+            foreach (var parentClass in info.ParentClass)
+            {
+                indent++;
+                sb.IndentLine(indent, $"{parentClass.Accessibility.ToName()} partial class {parentClass.Name}");
+                sb.IndentLine(indent, "{");
+            }
+
             indent++;
             sb.AppendXmlBlock(indent,
                 "<summary>",
@@ -119,6 +127,12 @@ namespace Lage.EnumDescription.Generators.Builders
 
         public string Build()
         {
+            foreach (var parentClass in info.ParentClass)
+            {
+                indent--;
+                sb.IndentLine(indent, "}");
+            }
+
             indent--;
             sb.IndentLine(indent, "}");
             indent--;

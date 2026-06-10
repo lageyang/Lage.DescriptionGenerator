@@ -5,13 +5,16 @@ using System.Text;
 
 namespace GenConsoleTest
 {
-    [LageDescriptionGenerate]
-    public enum UserType
+    public class ParentEnumClass
     {
-        [LageDescription("普通用户")]
-        Normal = 1,
+        [LageDescriptionGenerate]
+        public enum UserType
+        {
+            [LageDescription("普通用户")]
+            Normal = 1,
 
-        [LageDescription("VIP用户")]
-        Vip = 2,
+            [LageDescription("VIP用户")]
+            Vip = 2,
+        }
     }
 }

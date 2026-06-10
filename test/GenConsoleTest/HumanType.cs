@@ -7,13 +7,16 @@ using System.Threading.Tasks;
 
 namespace GenConsoleTest
 {
-    [LageDescriptionGenerate]
-    internal partial class HumanType
+    public partial class ParentClass
     {
-        [LageDescription("普通人")]
-        public const string Normal = nameof(Normal);
+        [LageDescriptionGenerate]
+        internal partial class HumanType
+        {
+            [LageDescription("普通人")]
+            public const string Normal = nameof(Normal);
 
-        [LageDescription("VIP客户")]
-        public const string Vip = nameof(Vip);
+            [LageDescription("VIP客户")]
+            public const string Vip = nameof(Vip);
+        }
     }
 }

@@ -2,7 +2,8 @@
 
 [![NuGet](https://img.shields.io/nuget/v/Lage.EnumDescription.Generator?label=NuGet)](https://www.nuget.org/packages/Lage.EnumDescription.Generator)
 [![License](https://img.shields.io/badge/license-MIT--0-green)](https://gitee.com/lageyang/lage.-description-generator/blob/master/LICENSE)
-
+[![Gitee](https://img.shields.io/badge/Gitee-Source-red?logo=gitee)](https://gitee.com/lageyang/lage.-description-generator.git)
+[![GitHub](https://img.shields.io/badge/GitHub-Source-black?logo=github)](https://github.com/lageyang/Lage.DescriptionGenerator.git)
 > 最后更新：2026-06-08
 
 基于 Roslyn `IIncrementalGenerator` 的**零反射、全 AOT 兼容**枚举描述源代码生成器。编译时将所有描述映射逻辑生成为硬编码 switch 表达式和静态查找表——运行时零反射、零动态代码、零 JIT，天然适配 Native AOT。
