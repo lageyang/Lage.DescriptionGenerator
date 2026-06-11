@@ -6,6 +6,7 @@
   </Folder>
   <Folder Name="/test/">
     <Project Path="test/GenConsoleTest/GenConsoleTest.csproj" Id="0a5a6894-cf08-4f38-894d-5785bc0ecfcb" />
+    <Project Path="test/Lage.EnumDesc.Benchmark/Lage.EnumDesc.Benchmark.csproj" Id="79b8d326-5bb2-4032-8d89-805500c04a8f" />
     <Project Path="test/Lage.EnumDescription.Generators.Tests/Lage.EnumDescription.Generators.Tests.csproj" />
   </Folder>
 </Solution>
