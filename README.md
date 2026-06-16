@@ -173,6 +173,22 @@ test/
     └── CoreTests/                       #   运行时模型测试
 ```
 
+## 性能基准
+
+> 环境：.NET 8.0 · Windows 11 · X64 RyuJIT AVX2  
+> 测试枚举：10 成员 `TestOrderStatus` · 方法：BenchmarkDotNet ShortRun
+
+| 操作 | 源生成器 | 反射 / BCL | 加速比 | 源生成器内存 | 对比方案内存 |
+|------|---------:|-----------:|-------:|:-----------:|:-----------:|
+| `ToDescription` | 18.6 ns | 1,047 ns | **56×** | 0 B | 720 B |
+| `ToName` | 18.0 ns | 127.9 ns (Enum.GetName) | **7×** | 0 B | 240 B |
+| `ParseByName` | 22.0 ns | 150.6 ns (Enum.Parse) | **7×** | 0 B | 0 B |
+| `TryParseByName` | 22.8 ns | 159.0 ns (Enum.TryParse) | **7×** | 0 B | 0 B |
+| `TryParseByDescription` | 21.1 ns | 14,122 ns (反射遍历) | **670×** | 0 B | 10,565 B |
+| `GeneratedSource` 遍历 | 2.4 ns/元素 | 1,071 ns/元素 (Enum.GetValues) | **442×** | 0 B | 784 B |
+
+> **所有源生成器方法零内存分配**，反射方案每次调用均有 GC 压力。
+
 ## 路线图
 
 - [x] `enum` 枚举源代码生成
